@@ -285,3 +285,19 @@
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--navy3); border-radius: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
+
+/* SIH Demo Walkthrough Highlight */
+.sih-highlight {
+  position: relative;
+  z-index: 150;
+  animation: sihPulse 2s ease-in-out infinite;
+}
+
+@keyframes sihPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7), 0 0 20px rgba(250, 204, 21, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(250, 204, 21, 0), 0 0 40px rgba(250, 204, 21, 0.6);
+  }
+}

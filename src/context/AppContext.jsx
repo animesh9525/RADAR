@@ -70,6 +70,28 @@ export function AppProvider({ children }) {
   const [toasts, setToasts] = useState([]);
   const [aiRunState, setAiRunState] = useState({ active: false, label: '', steps: [] });
 
+  // Modal states
+  const [taskModal, setTaskModal] = useState({ open: false, task: null });
+  const [blockModal, setBlockModal] = useState({ open: false, block: null });
+
+  const openTaskModal = useCallback((taskId) => {
+    const task = taskData[taskId] || tasks.find(t => t.id === taskId);
+    if (task) setTaskModal({ open: true, task });
+  }, [taskData, tasks]);
+
+  const closeTaskModal = useCallback(() => {
+    setTaskModal({ open: false, task: null });
+  }, []);
+
+  const openBlockModal = useCallback((blockId) => {
+    const block = blocks.find(b => b.id === blockId);
+    if (block) setBlockModal({ open: true, block });
+  }, [blocks]);
+
+  const closeBlockModal = useCallback(() => {
+    setBlockModal({ open: false, block: null });
+  }, []);
+
   const demoRef = useRef(demo);
   const storedBlocks = useRef(storage.loadBlocksFromStorage());
 
@@ -343,7 +365,10 @@ export function AppProvider({ children }) {
     whatIf, setWhatIfState,
     aiDemo, setAiDemo, runAiDemo, resetAiDemo, applyAiPlanToPlanner,
     aiRunState,
-    toasts, showToast, dismissToast,    updateBlock, addBlock, deleteBlock, setTaskPriority,
+    toasts, showToast, dismissToast,
+    taskModal, openTaskModal, closeTaskModal,
+    blockModal, openBlockModal, closeBlockModal,
+    updateBlock, addBlock, deleteBlock, setTaskPriority,
     doRecordApproval, addAudit, clearAudit,
     loadBundleForPreview, importBundle, resetToDemo,
     applyOptimizedPlanToPlanner,

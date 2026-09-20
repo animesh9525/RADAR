@@ -17,7 +17,8 @@ const NAV = [
   {
     group: 'Planning',
     items: [
-      { to: '/tasks', label: 'Block Planner', icon: ClipboardList },
+      { to: '/tasks', label: 'Task Register', icon: ClipboardList },
+      { to: '/block-planner', label: 'Block Planner', icon: Map },
       { to: '/schedule', label: 'Weekly Planner', icon: Calendar },
       { to: '/monthly', label: 'Monthly Planner', icon: CalendarDays },
     ],

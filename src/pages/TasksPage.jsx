@@ -14,7 +14,7 @@ const FACTOR_WEIGHTS = [
 ];
 
 export function TasksPage() {
-  const { tasks, blocks, trains } = useApp();
+  const { tasks, blocks, trains, openTaskModal } = useApp();
   const navigate = useNavigate();
   const [tab, setTab] = useState('All');
   const [q, setQ] = useState('');
@@ -92,7 +92,7 @@ export function TasksPage() {
               </thead>
               <tbody>
                 {filtered.map(({ t, scored, prio, blk }) => (
-                  <tr key={t.id} style={{ cursor: 'pointer' }} onClick={() => setDetail(t.id)}>
+                  <tr key={t.id} data-task-id={t.id} style={{ cursor: 'pointer' }} onClick={() => openTaskModal(t.id)}>
                     <td><b>{t.id}</b></td>
                     <td style={{ maxWidth: 260 }}>
                       <div style={{ fontWeight: 600 }}>{(t.title || '').split(' · ')[1] || t.title}</div>

@@ -3,6 +3,8 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import { AppLayout } from './components/layout';
 import { ToastHost, AIProcessOverlay2 } from './components/ui';
+import { TaskModal } from './components/TaskModal';
+import { BlockModal } from './components/BlockModal';
 import { LoginScreen } from './pages/LoginScreen';
 import { DashboardPage } from './pages/DashboardPage';
 import { TasksPage } from './pages/TasksPage';
@@ -26,7 +28,7 @@ import { DataIntegPage } from './pages/DataIntegPage';
 import { SettingsPage } from './pages/SettingsPage';
 
 function Shell() {
-  const { user, toasts, aiRunState, dismissToast } = useApp();
+  const { user, toasts, aiRunState, dismissToast, taskModal, closeTaskModal, blockModal, closeBlockModal, trains, taskData, deleteBlock } = useApp();
   return (
     <>
       {!user ? (
@@ -34,9 +36,10 @@ function Shell() {
       ) : (
         <Routes>
           <Route element={<AppLayout />}>
-            {/* 12 Primary Screens (in sidebar) */}
+            {/* 13 Primary Screens (in sidebar) */}
             <Route index element={<DashboardPage />} />
             <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/block-planner" element={<BlockPlannerPage />} />
             <Route path="/schedule" element={<WeeklyPage />} />
             <Route path="/monthly" element={<MonthlyPage />} />
             <Route path="/network" element={<NetworkOpsPage />} />
@@ -49,7 +52,6 @@ function Shell() {
             <Route path="/settings" element={<SettingsPage />} />
 
             {/* Sub-screens (linked internally from primary pages) */}
-            <Route path="/block-planner" element={<BlockPlannerPage />} />
             <Route path="/kanban" element={<KanbanPage />} />
             <Route path="/ai-planning" element={<AIPlanningPage />} />
             <Route path="/corridor" element={<CorridorPage />} />
@@ -62,6 +64,24 @@ function Shell() {
       )}
       <ToastHost toasts={toasts} onDismiss={dismissToast} />
       <AIProcessOverlay2 runState={aiRunState} />
+
+      {taskModal.open && (
+        <TaskModal
+          task={taskModal.task}
+          onClose={closeTaskModal}
+          onAssignToBlock={() => closeTaskModal()}
+        />
+      )}
+
+      {blockModal.open && (
+        <BlockModal
+          block={blockModal.block}
+          trains={trains}
+          taskData={taskData}
+          onClose={closeBlockModal}
+          onDelete={deleteBlock}
+        />
+      )}
     </>
   );
 }
