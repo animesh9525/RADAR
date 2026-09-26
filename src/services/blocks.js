@@ -42,10 +42,10 @@ function minutesToTimeSafe(min) {
 
 export function getBlockStatusBadge(status) {
   const map = {
-    Clear: { text: '🟢 Clear', cls: 'status-clear' },
-    Warning: { text: '🟡 Warning', cls: 'status-warning' },
-    Conflict: { text: '🔴 Conflict', cls: 'status-conflict' },
-    'Requires Review': { text: '⚪ Requires Review', cls: 'status-review' },
+    Clear: { text: 'Clear', cls: 'status-clear' },
+    Warning: { text: 'Warning', cls: 'status-warning' },
+    Conflict: { text: 'Conflict', cls: 'status-conflict' },
+    'Requires Review': { text: 'Requires Review', cls: 'status-review' },
   };
   return map[status] || map.Clear;
 }

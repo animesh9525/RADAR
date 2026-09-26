@@ -6,11 +6,14 @@ import { useApp } from '../context/AppContext';
 import { makeAnalyzer } from '../utils/analyzer';
 import { aiBuildOptimizedPlan, aiPlanMetrics } from '../services/optimization';
 import { Panel, MetricCard, ProgressBar, Badge } from '../components/ui';
+import { ensureChartTheme } from '../services/chartTheme';
 
 function ForecastChart({ weeks }) {
   const ref = useRef(null);
+  const { theme } = useApp();
   useEffect(() => {
     if (!ref.current) return;
+    ensureChartTheme();
     const chart = new Chart(ref.current.getContext('2d'), {
       type: 'line',
       data: {
@@ -27,7 +30,7 @@ function ForecastChart({ weeks }) {
       },
     });
     return () => chart.destroy();
-  }, [weeks]);
+  }, [weeks, theme]);
   return <div style={{ height: 220 }}><canvas ref={ref} /></div>;
 }
 
@@ -116,6 +119,7 @@ export function MonthlyPage() {
       </Panel>
 
       <Panel title="Corridor Roll-up" icon={<TrendingUp width={18} height={18} color="var(--green)" />}>
+        <div style={{ overflowX: 'auto' }}>
         <table className="table-app">
           <thead><tr><th>Corridor</th><th>Blocks</th><th>Tasks Planned</th><th>Conflicts</th><th>Status</th></tr></thead>
           <tbody>
@@ -130,6 +134,7 @@ export function MonthlyPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </Panel>
     </div>
   );

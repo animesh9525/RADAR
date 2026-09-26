@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, CheckCircle, AlertTriangle, Clock, MapPin, Wrench, Sparkles } from 'lucide-react';
+import { X, CheckCircle, AlertTriangle, Clock, MapPin, Wrench, Sparkles, Lightbulb } from 'lucide-react';
 import { Modal, Badge, ProgressBar } from './ui';
 import { calculatePriorityScore } from '../services/ai';
 
@@ -118,8 +118,9 @@ export function TaskModal({ task, onClose, onAssignToBlock }) {
                 <span style={{ fontWeight: 600, color: 'var(--text)' }}>{task.status || 'Pending'}</span>
               </div>
               {task.overdueDays && task.overdueDays > 0 && (
-                <div style={{ color: 'var(--red)', fontSize: 12, fontWeight: 600 }}>
-                  ⚠️ Overdue by {task.overdueDays} days
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', color: 'var(--red)', fontSize: 12, fontWeight: 600 }}>
+                  <AlertTriangle width={13} height={13} />
+                  Overdue by {task.overdueDays} days
                 </div>
               )}
             </div>
@@ -142,8 +143,9 @@ export function TaskModal({ task, onClose, onAssignToBlock }) {
           </button>
         </div>
 
-        <div style={{ marginTop: 12, padding: 10, background: 'rgba(59,130,246,.08)', borderRadius: 8, fontSize: 11, color: 'var(--muted)' }}>
-          💡 <b>Synthetic Demo:</b> Priority scores computed from task metadata using rule-based weights. Production version would integrate with TMS/SMMS real-time feeds.
+        <div style={{ marginTop: 12, padding: 10, background: 'rgba(59,130,246,.08)', borderRadius: 8, fontSize: 11, color: 'var(--muted)', display: 'flex', gap: 7, alignItems: 'flex-start' }}>
+          <Lightbulb width={13} height={13} style={{ color: 'var(--blue)', flexShrink: 0, marginTop: 1 }} />
+          <span><b>Synthetic Demo:</b> Priority scores computed from task metadata using rule-based weights. Production version would integrate with TMS/SMMS real-time feeds.</span>
         </div>
       </div>
     </Modal>

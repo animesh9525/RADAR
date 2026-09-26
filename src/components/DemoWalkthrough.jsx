@@ -92,7 +92,7 @@ const STEPS = [
     title: 'Network Operations',
     icon: RadioTower,
     screen: '/network',
-    callout: 'Live control room view: SVG railway topology overlaid on satellite imagery, real-time conflict markers, animated train movements, and interactive block inspection. Pan, zoom, filter by corridor — operational awareness at a glance.',
+    callout: 'Live control room view: SVG railway topology overlaid on a light vector GIS basemap, real-time conflict markers, animated train movements, and interactive block inspection. Pan, zoom, filter by corridor — operational awareness at a glance.',
     highlight: '#noSvg',
     delay: 200,
   },

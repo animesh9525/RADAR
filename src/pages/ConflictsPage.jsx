@@ -106,7 +106,7 @@ export function ConflictsPage() {
                         <ConflictLine key={'r' + i} icon={<Wrench width={14} height={14} />} tone="alert-orange" kind="Resource" msg={c.message} detail={c.recommendation} />
                       ))}
                       {analysis.all.length === 0 && (
-                        <div className="alert alert-green"><span className="alert-icon">✓</span><div>No conflicts detected for this block in the current state.</div></div>
+                        <div className="alert alert-green"><CheckCircle2 width={15} height={15} style={{ color: 'var(--green)' }} /><div>No conflicts detected for this block in the current state.</div></div>
                       )}
                       {resolved[block.id] && (
                         <div className="alert alert-blue"><span className="alert-icon"><Bot width={14} height={14} /></span><div><b>AI Resolution locked:</b> {resolved[block.id].text}</div></div>

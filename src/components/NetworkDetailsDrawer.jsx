@@ -10,6 +10,9 @@ export function NetworkDetailsDrawer({ detail, onClose, analyzeConflicts }) {
   const renderBlock = (block) => {
     const cf = analyzeConflicts ? analyzeConflicts(block) : { level: 'clear', severity: 'No Conflict', all: [], hasConflict: false };
     const depts = [...new Set((block.tasks || []).map(t => t.department))];
+    const sui = detail.sui;
+    const rec = detail.rec;
+    const suiLv = sui ? (sui.score >= 85 ? 'ok' : sui.score >= 60 ? 'warn' : 'crit') : '';
 
     return (
       <>
@@ -33,6 +36,29 @@ export function NetworkDetailsDrawer({ detail, onClose, analyzeConflicts }) {
           <div><b>Equipment</b><span>{block.requiredEquip || 'General'} ({block.equipmentStatus || 'AVAILABLE'})</span></div>
           <div><b>Status</b><span>{block.status || 'Clear'}</span></div>
         </div>
+        {sui && (
+          <>
+            <div className="no-sec">AI SUITABILITY</div>
+            <div className="no-suit">
+              <div className="no-suit-row">
+                <b>Own-Activity Suitability</b>
+                <span className={`no-det-lv ${suiLv}`}>{sui.score}/100</span>
+              </div>
+              <div className="no-sbar">
+                <i style={{ width: `${Math.max(4, Math.min(100, sui.score))}%` }} />
+              </div>
+            </div>
+            {rec && (
+              <>
+                <div className="no-sec">AI RECOMMENDATION</div>
+                <div className="no-rec">
+                  <b>{rec.title}</b>
+                  <span>{rec.reason}</span>
+                </div>
+              </>
+            )}
+          </>
+        )}
         {cf.all && cf.all.length > 0 && (
           <>
             <div className="no-sec">CONFLICTS ({cf.all.length})</div>

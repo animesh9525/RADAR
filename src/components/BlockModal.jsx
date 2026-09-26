@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { X, AlertTriangle, GitBranch, Trash2, Edit3, MapPin, Clock, Users, Wrench, Sparkles, TrendingUp } from 'lucide-react';
+import { X, AlertTriangle, GitBranch, Trash2, Edit3, MapPin, Clock, Users, Wrench, Sparkles, TrendingUp, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Badge, ProgressBar } from './ui';
 import { makeAnalyzer } from '../utils/analyzer';
@@ -198,8 +198,9 @@ export function BlockModal({ block, trains, taskData, onClose, onEdit, onDelete 
           )}
         </div>
 
-        <div style={{ marginTop: 12, padding: 10, background: 'rgba(59,130,246,.08)', borderRadius: 8, fontSize: 11, color: 'var(--muted)' }}>
-          💡 <b>Prototype AI:</b> Suitability and conflict scores computed from block metadata, train schedule, and resource availability using rule-based engine.
+        <div style={{ marginTop: 12, padding: 10, background: 'rgba(59,130,246,.08)', borderRadius: 8, fontSize: 11, color: 'var(--muted)', display: 'flex', gap: 7, alignItems: 'flex-start' }}>
+          <Lightbulb width={13} height={13} style={{ color: 'var(--blue)', flexShrink: 0, marginTop: 1 }} />
+          <span><b>Prototype AI:</b> Suitability and conflict scores computed from block metadata, train schedule, and resource availability using rule-based engine.</span>
         </div>
       </div>
     </Modal>

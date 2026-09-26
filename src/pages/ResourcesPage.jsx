@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Chart from 'chart.js/auto';
-import { Users, Boxes, Wrench, Sparkles, Eye, Search } from 'lucide-react';
+import { Users, Boxes, Wrench, Sparkles, Eye, Search, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Panel, MetricCard, Badge, Modal, EmptyState } from '../components/ui';
+import { ensureChartTheme } from '../services/chartTheme';
 
 const RESOURCE_DEPTS = ['Engineering', 'S&T', 'Traction/OHE'];
 const CREW_STATUS = { available: ['low', 'AVAILABLE'], limited: ['medium', 'LIMITED'], unavailable: ['high', 'UNAVAILABLE'] };
@@ -123,7 +124,7 @@ export function ResourcesPage() {
 
       <div className="grid gap-4" style={{ gridTemplateColumns: '1fr 1fr', alignItems: 'start' }}>
         <Panel title={`Crew Table (${filteredCrew.length})`} icon={<Users width={18} height={18} color="var(--blue)" />}>
-          {filteredCrew.length === 0 ? <EmptyState icon="🔍" title="No crews match" desc="Try resetting the Department, Status, or Corridor filters." /> : (
+          {filteredCrew.length === 0 ? <EmptyState icon={Search} title="No crews match" desc="Try resetting the Department, Status, or Corridor filters." /> : (
             <div style={{ overflowX: 'auto' }}>
               <table className="table-app">
                 <thead><tr><th>Crew/Team</th><th>Department</th><th>Corridor</th><th>Members</th><th>Required</th><th>Status</th><th>Assignment</th><th>Skills</th></tr></thead>
@@ -151,7 +152,7 @@ export function ResourcesPage() {
         </Panel>
 
         <Panel title={`Equipment Table (${filteredEquip.length})`} icon={<Boxes width={18} height={18} color="var(--teal)" />}>
-          {filteredEquip.length === 0 ? <EmptyState icon="🔍" title="No equipment matches" desc="Try resetting the Department, Status, or Corridor filters." /> : (
+          {filteredEquip.length === 0 ? <EmptyState icon={Search} title="No equipment matches" desc="Try resetting the Department, Status, or Corridor filters." /> : (
             <div style={{ overflowX: 'auto' }}>
               <table className="table-app">
                 <thead><tr><th>Equipment</th><th>Department</th><th>Available</th><th>Required</th><th>Status</th><th>Assigned Block</th></tr></thead>
@@ -205,7 +206,7 @@ function ResourceConflicts({ crew, equipment }) {
   return (
     <Panel title={`Resource Conflicts (${cards.length})`} icon={<Wrench width={18} height={18} color="var(--orange)" />}>
       {cards.length === 0 ? (
-        <div className="alert alert-green"><span className="alert-icon">✓</span><div>No active crew or equipment shortages detected in the current plan.</div></div>
+        <div className="alert alert-green"><CheckCircle2 width={15} height={15} style={{ color: 'var(--green)' }} /><div>No active crew or equipment shortages detected in the current plan.</div></div>
       ) : (
         <div style={{ display: 'grid', gap: 10 }}>
           {cards.map((c, i) => (
@@ -232,6 +233,7 @@ function ResourceConflicts({ crew, equipment }) {
 function ResourceUtilChart({ crew, equipment }) {
   const ref = useRef(null);
   const chartRef = useRef(null);
+  const { theme } = useApp();
   const data = useMemo(() => {
     const deptMap = {};
     RESOURCE_DEPTS.forEach(d => deptMap[d] = { avail: 0, req: 0 });
@@ -254,6 +256,7 @@ function ResourceUtilChart({ crew, equipment }) {
 
   useEffect(() => {
     if (!ref.current) return;
+    ensureChartTheme();
     chartRef.current = new Chart(ref.current.getContext('2d'), {
       type: 'bar',
       data: {
@@ -273,7 +276,7 @@ function ResourceUtilChart({ crew, equipment }) {
       },
     });
     return () => { if (chartRef.current) chartRef.current.destroy(); };
-  }, [data.avail.join(','), data.req.join(','), data.remain.join(',')]);
+  }, [data.avail.join(','), data.req.join(','), data.remain.join(','), theme]);
 
   return <div style={{ height: 220 }}><canvas ref={ref} /></div>;
 }
@@ -295,6 +298,7 @@ function ResourceDetailModal({ crew, equipment, blocks, detail, onClose, onViewB
         <Badge tone={cls}>{label}</Badge>
         <Badge tone="plain">{item.department}</Badge>
       </div>
+      <div style={{ overflowX: 'auto' }}>
       <table className="table-app">
         <tbody>
           <tr><td><b>Department</b></td><td>{item.department}</td></tr>
@@ -306,6 +310,7 @@ function ResourceDetailModal({ crew, equipment, blocks, detail, onClose, onViewB
           <tr><td><b>Current Assignment</b></td><td>{asg ? `${asg.id} · ${asg.corridor} · ${asg.date} ${asg.startTime}–${asg.endTime}` : '—'}</td></tr>
         </tbody>
       </table>
+      </div>
       {item.kind === 'crew' && (
         <div className="note" style={{ marginTop: 12 }}><b>Skills</b><div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>{item.skills.map(s => <span key={s} className="badge plain">{s}</span>)}</div></div>
       )}

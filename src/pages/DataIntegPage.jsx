@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Database, Upload, FileSpreadsheet, CheckCircle2, AlertTriangle, PlayCircle, RotateCcw, Sparkles } from 'lucide-react';
+import { Database, Upload, FileSpreadsheet, Check, CheckCircle2, AlertTriangle, PlayCircle, RotateCcw, Sparkles } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { demoBundle, previewRows } from '../services/import';
 import { DEMO_DATA } from '../data/demoData';
@@ -93,7 +93,7 @@ export function DataIntegPage() {
       {validation && (
         <Panel title="Validation" icon={<CheckCircle2 width={18} height={18} color={validation.status === 'VALID' ? 'var(--green)' : 'var(--orange)'} />} actions={
           <>
-            {validation.status === 'VALID' ? <Badge tone="low">✓ VALID</Badge> : <Badge tone="medium"><AlertTriangle width={11} height={11} /> NEEDS ATTENTION</Badge>}
+            {validation.status === 'VALID' ? <Badge tone="low"><Check width={11} height={11} /> VALID</Badge> : <Badge tone="medium"><AlertTriangle width={11} height={11} /> NEEDS ATTENTION</Badge>}
             {validation.issues.length > 0 && (
               <button className="btn btn-secondary btn-sm" onClick={() => setShowIssues(v => !v)}>Issues ({validation.issues.length})</button>
             )}
@@ -148,7 +148,7 @@ export function DataIntegPage() {
 
       {done && (
         <Panel title="Import Complete" icon={<CheckCircle2 width={18} height={18} color="var(--green)" />}>
-          <div className="alert alert-green"><span className="alert-icon">✓</span><div>Dataset imported — {done.tasks} tasks, {done.assets} assets, {done.trains} trains, {done.resources} resources, {done.blocks} blocks.</div></div>
+          <div className="alert alert-green"><CheckCircle2 width={15} height={15} style={{ color: 'var(--green)' }} /><div>Dataset imported — {done.tasks} tasks, {done.assets} assets, {done.trains} trains, {done.resources} resources, {done.blocks} blocks.</div></div>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
             <button className="btn btn-secondary btn-sm" onClick={() => addNotification('AI analysis complete — imported dataset ready for planning')}><Sparkles width={13} height={13} /> Analyze with AI-ABPS</button>
             <button className="btn btn-secondary btn-sm" onClick={() => setConfirmReset(true)}><RotateCcw width={13} height={13} /> Reset to Demo Data</button>

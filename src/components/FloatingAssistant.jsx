@@ -48,10 +48,11 @@ export function FloatingAssistant() {
               <div key={i} style={{
                 alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
                 maxWidth: '90%',
-                background: m.role === 'user' ? 'linear-gradient(135deg,var(--blue),var(--purple))' : 'var(--bg)',
+                background: m.role === 'user' ? 'linear-gradient(135deg,#3d8bfd,#2568e1)' : 'var(--card-2)',
                 color: m.role === 'user' ? '#fff' : 'var(--text)',
-                border: '1px solid var(--border)',
-                padding: '8px 10px', borderRadius: 10, fontSize: 12.5, lineHeight: 1.5,
+                border: m.role === 'user' ? 'none' : '1px solid var(--border)',
+                padding: '8px 11px', borderRadius: 'var(--radius-sm)', fontSize: 12.5, lineHeight: 1.55,
+                boxShadow: m.role === 'user' ? '0 2px 6px -2px rgba(37,102,225,.4)' : 'var(--shadow-xs)',
               }}>
                 <span dangerouslySetInnerHTML={{ __html: m.text }} />
                 {m.route && (

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Brain, Search } from 'lucide-react';
+import { Brain, Search, ClipboardList } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { calculatePriorityScore, getPriorityCategory, calculateSuitabilityScore } from '../services/ai';
@@ -81,7 +81,7 @@ export function TasksPage() {
         }
       >
         {filtered.length === 0 ? (
-          <EmptyState icon="📋" title="No tasks match" desc="Try a different filter or search term." />
+          <EmptyState icon={ClipboardList} title="No tasks match" desc="Try a different filter or search term." />
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table className="table-app">
@@ -108,7 +108,15 @@ export function TasksPage() {
                     </td>
                     <td>{t.risk}%</td>
                     <td>{t.due}</td>
-                    <td>{blk ? <span className="badge plain">{blk.id}</span> : <span className="note">unassigned</span>}</td>
+                    <td>
+                    {blk
+                      ? <button
+                          className="badge plain clickable"
+                          title={`Open ${blk.id} in Block Planner`}
+                          onClick={(e) => { e.stopPropagation(); navigate('/block-planner', { state: { openBlock: blk.id } }); }}
+                        >{blk.id}</button>
+                      : <span className="note">unassigned</span>}
+                  </td>
                   </tr>
                 ))}
               </tbody>

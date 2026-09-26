@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import { AppLayout } from './components/layout';
 import { ToastHost, AIProcessOverlay2 } from './components/ui';
@@ -59,6 +59,13 @@ function Shell() {
             <Route path="/assets" element={<AssetsPage />} />
             <Route path="/assistant" element={<AssistantPage />} />
             <Route path="/data" element={<DataIntegPage />} />
+
+            {/* URL aliases (redirect to canonical screen so the shared shell + Demo Planner identity stays present) */}
+            <Route path="/dashboard" element={<Navigate to="/" replace />} />
+            <Route path="/weekly" element={<Navigate to="/schedule" replace />} />
+            <Route path="/map" element={<Navigate to="/network" replace />} />
+            <Route path="/network-operations" element={<Navigate to="/network" replace />} />
+            <Route path="/data-integration" element={<Navigate to="/data" replace />} />
           </Route>
         </Routes>
       )}

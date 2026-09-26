@@ -4,7 +4,7 @@
    ============================================================ */
 
 #netopsWrapper {
-  margin: -25px -30px -45px;
+  margin: -25px -20px -45px;
   padding: 0;
 }
 
@@ -21,12 +21,12 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  height: calc(100vh - 120px);
-  min-height: 580px;
-  padding: 16px 18px;
+  gap: 8px;
+  height: calc(100vh - 66px);
+  min-height: 520px;
+  padding: 10px 12px;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: 16px;
   background: radial-gradient(1100px 560px at 18% -12%, #14263f 0%, rgba(11, 18, 32, 0) 60%),
               radial-gradient(900px 520px at 100% 110%, #101c33 0%, rgba(11, 18, 32, 0) 55%),
               #0b1220;
@@ -51,11 +51,11 @@
   box-shadow: 0 10px 30px rgba(2, 6, 23, 0.45);
 }
 
-/* Header */
+/* Header (merged with toolbar) */
 #netopsApp .no-hd {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   flex-wrap: wrap;
   flex: 0 0 auto;
 }
@@ -63,11 +63,12 @@
 #netopsApp .no-ht {
   display: flex;
   align-items: center;
-  gap: 9px;
-  font-size: 15px;
+  gap: 8px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.05em;
   color: #f1f5f9;
+  white-space: nowrap;
 }
 
 #netopsApp .no-live {
@@ -78,8 +79,8 @@
   color: var(--no-green);
   border: 1px solid rgba(52, 211, 153, 0.35);
   border-radius: 20px;
-  padding: 3px 9px;
-  font-size: 9px;
+  padding: 2px 8px;
+  font-size: 8.5px;
   font-weight: 800;
   letter-spacing: 0.16em;
 }
@@ -100,22 +101,21 @@
 
 #netopsApp .no-sub {
   width: 100%;
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--no-mt);
-  margin-top: -8px;
   letter-spacing: 0.03em;
 }
 
 #netopsApp .no-stats {
   display: flex;
-  gap: 8px;
-  margin-left: auto;
+  gap: 6px;
+  flex: 0 0 auto;
 }
 
 #netopsApp .no-stat {
-  min-width: 54px;
-  padding: 7px 11px;
-  border-radius: 10px;
+  min-width: 48px;
+  padding: 4px 9px;
+  border-radius: 8px;
   background: var(--no-p2);
   border: 1px solid var(--no-br);
   text-align: center;
@@ -123,38 +123,40 @@
 
 #netopsApp .no-stat b {
   display: block;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 800;
   color: #fff;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
 #netopsApp .no-stat span {
-  font-size: 8.5px;
-  letter-spacing: 0.13em;
+  font-size: 7.5px;
+  letter-spacing: 0.12em;
   color: var(--no-mt);
   text-transform: uppercase;
 }
 
 #netopsApp .no-htools {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  margin-left: auto;
 }
 
 #netopsApp .no-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: var(--no-p2);
   border: 1px solid var(--no-br);
   color: var(--no-tx);
-  border-radius: 9px;
-  padding: 7px 12px;
-  font-size: 11.5px;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 10.5px;
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s;
   font-family: inherit;
+  white-space: nowrap;
 }
 
 #netopsApp .no-btn:hover {
@@ -166,24 +168,44 @@
 #netopsApp .no-tb {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   flex-wrap: wrap;
   flex: 0 0 auto;
 }
 
+#netopsApp .no-grp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 8px;
+  border-radius: 9px;
+  background: var(--no-p2);
+  border: 1px solid var(--no-br);
+  flex-wrap: wrap;
+}
+
+#netopsApp .no-grp-label {
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--no-mt);
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
 #netopsApp .no-chips {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
 #netopsApp .no-chip {
-  padding: 6px 13px;
+  padding: 3px 9px;
   border-radius: 99px;
-  background: var(--no-p2);
-  border: 1px solid var(--no-br);
+  background: transparent;
+  border: 1px solid transparent;
   color: var(--no-mt);
-  font-size: 10.5px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.08em;
   cursor: pointer;
@@ -204,24 +226,38 @@
 
 #netopsApp .no-legend {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-left: auto;
   align-items: center;
 }
 
 #netopsApp .no-leg {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 10.5px;
+  gap: 4px;
+  font-size: 9.5px;
   font-weight: 700;
   color: var(--no-mt);
+  padding: 2px 6px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  transition: 0.2s;
+}
+
+#netopsApp .no-leg:hover {
+  color: var(--no-tx);
+  border-color: var(--no-br);
+}
+
+#netopsApp .no-leg.active {
+  color: #fff;
+  background: rgba(148, 163, 184, 0.14);
+  border-color: rgba(148, 163, 184, 0.35);
 }
 
 #netopsApp .no-leg i {
-  width: 16px;
-  height: 3px;
+  width: 11px;
+  height: 2px;
   border-radius: 2px;
   display: inline-block;
 }
@@ -230,7 +266,6 @@
 #netopsApp .no-bd {
   flex: 1 1 auto;
   display: flex;
-  gap: 12px;
   min-height: 0;
   position: relative;
 }
@@ -239,10 +274,10 @@
   position: relative;
   flex: 1 1 auto;
   min-width: 0;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid var(--no-br);
-  background: radial-gradient(760px 420px at 50% 42%, rgba(30, 64, 120, 0.16), rgba(0, 0, 0, 0) 70%), #070d17;
+  border: 1px solid rgba(100, 116, 139, 0.28);
+  background: radial-gradient(900px 520px at 50% 40%, #f8fafc 0%, #e8eef5 100%);
 }
 
 #netopsApp .no-map {
@@ -255,7 +290,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: #0a0f17;
+  background: #dfe6ee;
   pointer-events: none;
 }
 
@@ -269,16 +304,16 @@
 }
 
 #netopsApp #noSat .leaflet-tile {
-  filter: saturate(1.08) contrast(1.02);
+  filter: saturate(1);
 }
 
 #netopsApp .leaflet-container {
-  background: #0a0f17;
+  background: #dfe6ee;
 }
 
 #netopsApp .leaflet-control-attribution {
-  background: rgba(5, 9, 16, 0.55) !important;
-  color: rgba(160, 178, 199, 0.78) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: rgba(51, 65, 85, 0.85) !important;
   font-size: 7px;
   letter-spacing: 0.03em;
   padding: 1px 6px;
@@ -287,7 +322,7 @@
 }
 
 #netopsApp .leaflet-control-attribution a {
-  color: #8fb2cf !important;
+  color: #64748b !important;
 }
 
 #netopsApp #noSvg {
@@ -375,52 +410,154 @@
 }
 
 #netopsApp .no-corarrow {
-  fill: rgba(226, 232, 240, 0.75);
+  fill: rgba(30, 41, 59, 0.75);
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 0.6;
   pointer-events: none;
+}
+
+#netopsApp .no-stlbl {
+  transition: opacity 0.25s;
 }
 
 #netopsApp .no-stname {
   font-size: 11.5px;
   font-weight: 700;
-  fill: #e7eef6;
-  text-anchor: middle;
+  fill: #0f2a43;
   pointer-events: none;
   paint-order: stroke;
-  stroke: rgba(6, 11, 21, 0.94);
+  stroke: rgba(255, 255, 255, 0.95);
   stroke-width: 3px;
+}
+
+#netopsApp .no-stname-sel {
+  font-size: 13px;
+  font-weight: 800;
+  fill: #0b1c33;
 }
 
 #netopsApp .no-stsub {
   font-size: 8px;
-  fill: #a7bccf;
+  fill: #3b5a7a;
   text-anchor: middle;
   pointer-events: none;
   letter-spacing: 0.12em;
   paint-order: stroke;
-  stroke: rgba(6, 11, 21, 0.94);
+  stroke: rgba(255, 255, 255, 0.95);
   stroke-width: 2.5px;
+}
+
+/* Leader lines (labels and conflict pins) */
+#netopsApp .no-lead {
+  stroke: rgba(71, 85, 105, 0.55);
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+#netopsApp .no-lead-st {
+  stroke: rgba(71, 85, 105, 0.45);
+  stroke-dasharray: 2 3;
+}
+
+#netopsApp .no-lead-conf {
+  stroke: rgba(220, 38, 38, 0.7);
+}
+
+/* Station interaction states */
+#netopsApp .no-station {
+  cursor: pointer;
+}
+
+#netopsApp .no-station circle {
+  transition: opacity 0.2s;
+}
+
+#netopsApp .no-station:hover > circle:not([r="3"]) {
+  stroke: #7c8ba1;
+}
+
+#netopsApp .no-stn-sel > circle:not([r="3"]) {
+  stroke: #0b1c33 !important;
+  stroke-width: 2.5;
+}
+
+/* Corridor labels (LOD pills) */
+#netopsApp .no-corlabel {
+  cursor: pointer;
+}
+
+#netopsApp .no-corlabel text {
+  font-size: 10.5px;
+  font-weight: 800;
+  fill: #0f2a43;
+  letter-spacing: 0.12em;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+#netopsApp .no-cor-dim {
+  opacity: 0.28;
+  transition: opacity 0.2s;
+}
+
+#netopsApp .no-corgrp {
+  transition: opacity 0.2s;
+}
+
+#netopsApp .no-blockgrp {
+  cursor: pointer;
 }
 
 #netopsApp .no-blockb {
   cursor: pointer;
   stroke-width: 2;
-  transition: opacity 0.3s, filter 0.2s;
+  transition: opacity 0.3s, filter 0.2s, stroke-width 0.2s;
 }
 
 #netopsApp .no-blockb:hover {
   filter: brightness(1.3);
 }
 
+#netopsApp .no-blk-conf .no-blockb {
+  stroke: #b91c1c;
+  stroke-width: 2.6;
+}
+
+#netopsApp .no-blk-hov .no-blockb {
+  filter: brightness(1.08);
+  stroke-width: 3;
+}
+
+#netopsApp .no-blk-sel .no-blockb {
+  stroke: #0b1c33;
+  stroke-width: 3.5;
+  filter: brightness(1.1);
+}
+
+#netopsApp .no-blocklbl {
+  pointer-events: none;
+}
+
 #netopsApp .no-blklabel {
   font-size: 11px;
   font-weight: 800;
-  fill: #ffffff;
+  fill: #0f2a43;
   text-anchor: middle;
   pointer-events: none;
   paint-order: stroke;
-  stroke: rgba(6, 11, 21, 0.92);
+  stroke: rgba(255, 255, 255, 0.95);
   stroke-width: 3.5px;
   letter-spacing: 0.06em;
+}
+
+#netopsApp .no-blklabel-sel {
+  font-size: 12.5px;
+  font-weight: 900;
+  fill: #0b1c33;
+}
+
+#netopsApp .no-blklabel-conf {
+  fill: #b91c1c;
 }
 
 #netopsApp .no-halo {
@@ -436,26 +573,34 @@
   cursor: pointer;
 }
 
-/* Sidebar */
+/* Sidebar (overlay on the right of the map) */
 #netopsApp .no-side {
-  flex: 0 0 296px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 272px;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  transition: flex-basis 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  z-index: 18;
+  box-shadow: -12px 0 34px rgba(2, 6, 23, 0.6);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
 }
 
 #netopsApp .no-side-hd {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 11px 14px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--no-br);
   flex: 0 0 auto;
 }
 
 #netopsApp .no-side-title {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.15em;
   color: var(--no-mt);
@@ -464,7 +609,7 @@
 #netopsApp .no-side-min {
   background: transparent;
   border: none;
-  padding: 5px;
+  padding: 4px;
   color: var(--no-mt);
   cursor: pointer;
 }
@@ -476,11 +621,26 @@
 #netopsApp .no-side-list {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 9px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   overscroll-behavior: contain;
+}
+
+/* Collapsed sidebar: slides off-canvas */
+#netopsApp.no-col .no-side {
+  transform: translateX(110%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#netopsApp.no-col .no-side-hd {
+  display: flex;
+}
+
+#netopsApp.no-col .no-side-list {
+  display: flex;
 }
 
 #netopsApp .no-bitem {
@@ -498,6 +658,16 @@
 #netopsApp .no-bitem:hover {
   border-color: var(--no-br);
   background: rgba(148, 163, 184, 0.13);
+}
+
+#netopsApp .no-bitem.sel {
+  border-color: rgba(56, 189, 248, 0.55);
+  background: rgba(56, 189, 248, 0.12);
+  box-shadow: inset 2px 0 0 0 #38bdf8;
+}
+
+#netopsApp .no-bitem.sel .no-bid {
+  color: #ffffff;
 }
 
 #netopsApp .no-bdot {
@@ -548,20 +718,22 @@
   color: #b6c4d4;
 }
 
-/* AI Insight Banner */
+/* AI Insight Banner (slim single line) */
 #netopsApp .no-ins {
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  gap: 9px;
+  align-items: center;
   flex: 0 0 auto;
-  padding: 11px 15px;
+  padding: 5px 12px;
+  white-space: nowrap;
+  min-height: 30px;
 }
 
 #netopsApp .no-ins-ic {
   flex: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -577,9 +749,11 @@
 
 #netopsApp .no-ins-t {
   font-size: 11.5px;
-  line-height: 1.55;
+  line-height: 1.4;
   color: #c9d5e2;
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #netopsApp .no-ins-t b {
@@ -604,16 +778,16 @@
   flex: 0 0 auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 6px;
+  padding: 6px 8px;
 }
 
 #netopsApp .no-corr {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  border-radius: 10px;
+  gap: 7px;
+  padding: 5px 9px;
+  border-radius: 8px;
   background: rgba(148, 163, 184, 0.06);
   border: 1px solid var(--no-br);
   cursor: pointer;
@@ -802,6 +976,55 @@
   color: #fca5a5;
 }
 
+#netopsApp .no-suit {
+  display: grid;
+  gap: 6px;
+}
+
+#netopsApp .no-suit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 11.5px;
+  color: #c9d5e2;
+}
+
+#netopsApp .no-suit-row b {
+  color: var(--no-mt);
+  font-weight: 600;
+}
+
+#netopsApp .no-sbar {
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(148, 163, 184, 0.18);
+  overflow: hidden;
+}
+
+#netopsApp .no-sbar i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #34d399, #38bdf8);
+}
+
+#netopsApp .no-rec {
+  display: grid;
+  gap: 5px;
+  font-size: 11px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  border-left: 3px solid #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  color: #c9d5e2;
+}
+
+#netopsApp .no-rec b {
+  color: #7dd3fc;
+  font-size: 12px;
+}
+
 #netopsApp .no-det-tasks {
   display: grid;
   gap: 6px;
@@ -880,15 +1103,9 @@
 
 /* Sidebar collapsed state */
 #netopsApp.no-col .no-side {
-  flex-basis: 0;
-  overflow: hidden;
-  padding: 0;
-  border: none;
-}
-
-#netopsApp.no-col .no-side-list,
-#netopsApp.no-col .no-side-hd {
-  display: none;
+  transform: translateX(112%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Filter rules */
@@ -926,7 +1143,7 @@
   opacity: 0.15 !important;
 }
 
-#netopsApp[data-filter="conflicts"] .no-blklabel {
+#netopsApp[data-filter="conflicts"] .no-blklabel:not(.no-blklabel-conf):not(.no-blklabel-sel) {
   opacity: 0.25;
 }
 
@@ -950,6 +1167,27 @@
   opacity: 0.35;
 }
 
+#netopsApp[data-filter="stations"] .no-train,
+#netopsApp[data-filter="stations"] .no-confmark {
+  opacity: 0.08 !important;
+}
+
+#netopsApp[data-filter="stations"] .no-blockb {
+  opacity: 0.18 !important;
+}
+
+#netopsApp[data-filter="stations"] .no-blklabel {
+  opacity: 0.2;
+}
+
+#netopsApp[data-filter="stations"] .no-corline {
+  opacity: 0.6;
+}
+
+#netopsApp[data-filter="stations"] .no-stlbl {
+  opacity: 1;
+}
+
 #netopsApp[data-filter="conflicts"] .no-rail {
   opacity: 0.3;
 }
@@ -962,109 +1200,6 @@
 #netopsApp .no-rail {
   fill: none;
   stroke-linecap: round;
-}
-
-#netopsApp .no-stlbl {
-  opacity: 0;
-  transition: opacity 0.25s;
-}
-
-#netopsApp.no-zoomed .no-stlbl {
-  opacity: 1;
-}
-
-/* Layer toggles */
-#netopsApp:not([data-layers~="map"]) #noSat {
-  display: none;
-}
-
-#netopsApp:not([data-layers~="rail"]) .no-railbed,
-#netopsApp:not([data-layers~="rail"]) .no-corline,
-#netopsApp:not([data-layers~="rail"]) .no-rail,
-#netopsApp:not([data-layers~="rail"]) .no-corhit,
-#netopsApp:not([data-layers~="rail"]) .no-corarrow {
-  display: none;
-}
-
-#netopsApp:not([data-layers~="block"]) .no-blockgrp {
-  display: none;
-}
-
-#netopsApp:not([data-layers~="train"]) .no-train {
-  display: none;
-}
-
-#netopsApp:not([data-layers~="conflict"]) .no-confmark {
-  display: none;
-}
-
-#netopsApp:not([data-layers~="station"]) .no-station {
-  display: none;
-}
-
-#netopsApp .no-layers {
-  position: absolute;
-  top: 36px;
-  right: 10px;
-  z-index: 24;
-  background: rgba(12, 19, 32, 0.92);
-  border: 1px solid var(--no-br);
-  border-radius: 10px;
-  padding: 7px 9px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  color: var(--no-mt);
-  box-shadow: 0 8px 22px rgba(2, 6, 23, 0.55);
-  user-select: none;
-}
-
-#netopsApp .no-layers-tt {
-  font-size: 8px;
-  letter-spacing: 0.18em;
-  color: #6f88a0;
-  margin-bottom: 3px;
-}
-
-#netopsApp .no-layer {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  cursor: pointer;
-  color: #aab9c8;
-  white-space: nowrap;
-  padding: 2px 3px;
-  border-radius: 5px;
-  transition: 0.15s;
-}
-
-#netopsApp .no-layer:hover {
-  color: #f1f5f9;
-  background: rgba(148, 163, 184, 0.1);
-}
-
-#netopsApp .no-layer input {
-  opacity: 0;
-  position: absolute;
-  width: 1px;
-  height: 1px;
-}
-
-#netopsApp .no-layersw {
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
-  background: var(--c, #94a3b8);
-  flex: none;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
-}
-
-#netopsApp .no-layer input:not(:checked) + .no-layersw {
-  opacity: 0.3;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
 
 #netopsApp .no-scalebar {
@@ -1083,8 +1218,8 @@
   width: 86px;
   height: 5px;
   border-radius: 3px;
-  background: linear-gradient(90deg, rgba(226, 232, 240, 0.95), rgba(226, 232, 240, 0.28));
-  border: 1px solid rgba(2, 6, 23, 0.6);
+  background: linear-gradient(90deg, rgba(30, 41, 59, 0.85), rgba(30, 41, 59, 0.3));
+  border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
 #netopsApp .no-scalebar span {
@@ -1092,6 +1227,18 @@
   letter-spacing: 0.14em;
   color: var(--no-mt);
   font-weight: 800;
+}
+
+#netopsApp .no-blksub {
+  font-size: 8px;
+  font-weight: 600;
+  fill: #33506e;
+  text-anchor: middle;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 2.5px;
+  letter-spacing: 0.04em;
 }
 
 /* Reduced motion */
@@ -1113,10 +1260,10 @@
   #netopsApp {
     height: calc(100vh - 188px);
     min-height: 560px;
-    padding: 13px 14px;
+    padding: 10px 12px;
   }
   #netopsApp .no-side {
-    flex-basis: 256px;
+    width: 244px;
   }
   #netopsApp .no-side-list {
     max-height: 200px;
@@ -1138,7 +1285,12 @@
     min-height: 430px;
   }
   #netopsApp .no-side {
-    flex-basis: auto;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: auto;
+    width: 240px;
+    max-height: 210px;
   }
   #netopsApp .no-side-list {
     max-height: 170px;
@@ -1154,10 +1306,44 @@
     width: auto;
     max-height: 58%;
   }
-  #netopsApp .no-layers {
-    display: none;
-  }
   #netopsApp .no-tip {
     display: none !important;
   }
+}
+
+/* ============================================================
+   Premium polish tweaks (chrome only — map untouched)
+   ============================================================ */
+#netopsApp .no-grp {
+  background: rgba(10, 17, 32, 0.6);
+}
+
+#netopsApp .no-chip.active {
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.3);
+}
+
+#netopsApp .no-btn:active {
+  transform: translateY(1px);
+}
+
+#netopsApp .no-stat:hover {
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+#netopsApp .no-side {
+  box-shadow: -14px 0 36px rgba(2, 6, 23, 0.55);
+}
+
+#netopsApp .no-mw {
+  border-color: rgba(100, 116, 139, 0.34);
+  box-shadow: 0 2px 10px -4px rgba(2, 6, 23, 0.5);
+}
+
+#netopsApp .no-sb {
+  gap: 8px;
+  padding: 7px 9px;
+}
+
+#netopsApp .no-corr {
+  padding: 6px 10px;
 }

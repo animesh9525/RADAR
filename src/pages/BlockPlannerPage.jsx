@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import {
   Plus, Search, Filter, Save, X, Trash2, GitBranch, Clock, CalendarDays,
-  AlertTriangle, CheckCircle2, Sparkles, ArrowRight,
+  AlertTriangle, CheckCircle2, Sparkles, ArrowRight, MousePointerClick,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { makeAnalyzer, tone } from '../utils/analyzer';
@@ -94,7 +94,7 @@ export function BlockPlannerPage() {
       <div className="grid gap-4" style={{ gridTemplateColumns: '1.4fr 1fr', alignItems: 'start' }}>
         <Panel title={`Maintenance Blocks (${visible.length})`} icon={<CalendarDays width={18} height={18} color="var(--blue)" />}>
           {visible.length === 0 ? (
-            <EmptyState icon="🗓️" title="No blocks" desc="Try clearing filters or create a new draft block." />
+            <EmptyState icon={CalendarDays} title="No blocks" desc="Try clearing filters or create a new draft block." />
           ) : (
             <div style={{ display: 'grid', gap: 10 }}>
               {visible.map(b => {
@@ -154,7 +154,7 @@ export function BlockPlannerPage() {
             />
           ) : (
             <Panel title="Block Details" icon={<Sparkles width={18} height={18} color="var(--purple)" />}>
-              <EmptyState icon="👈" title="Select a block" desc="Choose a maintenance block to view its AI explanation, conflicts, and planning windows." />
+              <EmptyState icon={MousePointerClick} title="Select a block" desc="Choose a maintenance block to view its AI explanation, conflicts, and planning windows." />
             </Panel>
           )}
         </div>
@@ -311,7 +311,7 @@ function BlockDetailPanel({ block, analyzer, approvals, onEdit, onDelete, candid
             <div className="alert alert-orange" key={'r' + i}><span className="alert-icon">!</span><div><b>Resource</b> — {c.message}</div></div>
           ))}
           {rec.analysis.all.length === 0 && (
-            <div className="alert alert-green"><span className="alert-icon">✓</span><div>No critical conflicts. Prototype analysis clear.</div></div>
+            <div className="alert alert-green"><CheckCircle2 width={15} height={15} style={{ color: 'var(--green)' }} /><div>No critical conflicts. Prototype analysis clear.</div></div>
           )}
         </div>
 

@@ -35,12 +35,15 @@ export function Panel({ title, icon, actions, children, bodyClass = '', classNam
   );
 }
 
-export function MetricCard({ label, value, delta, color, small }) {
+export function MetricCard({ label, value, delta, color, small, icon: Icon }) {
   return (
-    <div className="app-card" style={{ padding: 16 }}>
-      <div className="card-label">{label}</div>
+    <div className="app-card metric-card" style={{ ['--metric-accent']: color || 'var(--blue)' }}>
+      <div className="metric-card-head">
+        <div className="card-label">{label}</div>
+        {Icon && <span className="metric-ic"><Icon width={16} height={16} /></span>}
+      </div>
       <div className="card-value" style={small ? { fontSize: 20 } : color ? { color } : undefined}>{value}</div>
-      {delta != null && <div className="card-delta">{delta}</div>}
+      <div className="card-delta">{delta != null ? delta : <span style={{ visibility: 'hidden' }}>·</span>}</div>
     </div>
   );
 }
@@ -50,18 +53,23 @@ export function Modal({ open, title, onClose, children, width = 520 }) {
   return (
     <div
       onClick={onClose}
+      className="modal-overlay"
       style={{
         position: 'fixed', inset: 0, zIndex: 120,
         background: 'rgba(15,23,42,0.55)',
         display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-        padding: '40px 16px', overflowY: 'auto',
+        padding: '44px 16px', overflowY: 'auto',
       }}
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'var(--card)', borderRadius: 12, border: '1px solid var(--border)',
+          background: 'var(--glass-strong)',
+          WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(1.15)',
+          backdropFilter: 'blur(var(--glass-blur)) saturate(1.15)',
+          borderRadius: 'var(--radius-card)', border: '1px solid var(--border-2)',
           boxShadow: 'var(--shadow-xl)', width, maxWidth: '100%', overflow: 'hidden',
+          animation: 'popIn 0.18s var(--ease)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', borderBottom: '1px solid var(--border)' }}>
@@ -86,20 +94,34 @@ export function ConfirmDialog({ open, title, message, confirmLabel = 'Confirm', 
   );
 }
 
-export function EmptyState({ icon = '◦', title = 'No data', desc }) {
+export function EmptyState({ icon, title = 'No data', desc }) {
+  const isStr = typeof icon === 'string';
+  const isEl = React.isValidElement(icon);
+  const node = !isStr && icon && !isEl
+    ? React.createElement(icon, { width: 22, height: 22, strokeWidth: 1.75 })
+    : icon;
   return (
-    <div style={{ textAlign: 'center', padding: '36px 16px', color: 'var(--muted)' }}>
-      <div style={{ fontSize: 38, marginBottom: 8 }}>{icon}</div>
-      <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>{title}</div>
-      {desc && <div style={{ fontSize: 13, marginTop: 6 }}>{desc}</div>}
+    <div style={{ textAlign: 'center', padding: '34px 18px', color: 'var(--muted)' }}>
+      <div style={{
+        margin: '0 auto 12px', width: 46, height: 46, borderRadius: 12,
+        background: 'var(--card-2)', border: '1px solid var(--border)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: 'var(--muted)',
+      }}>
+        {isStr
+          ? <span style={{ fontSize: 20, fontWeight: 800, lineHeight: 1 }}>{icon || '·'}</span>
+          : node ? <span style={{ display: 'inline-flex', opacity: 0.85 }}>{node}</span> : null}
+      </div>
+      <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)' }}>{title}</div>
+      {desc && <div style={{ fontSize: 13, marginTop: 5, maxWidth: 360, margin: '5px auto 0' }}>{desc}</div>}
     </div>
   );
 }
 
 export function ProgressBar({ value, color }) {
   return (
-    <div style={{ height: 8, background: 'var(--bg)', borderRadius: 6, overflow: 'hidden', border: '1px solid var(--border)' }}>
-      <div style={{ width: `${Math.max(0, Math.min(100, value))}%`, height: '100%', background: color || 'var(--blue)', transition: 'width .4s ease' }} />
+    <div className="pbar" style={{ ['--pbar-color']: color || 'var(--blue)' }}>
+      <i style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
     </div>
   );
 }
@@ -117,6 +139,7 @@ export function ToastHost({ toasts, onDismiss }) {
               borderRadius: 10, padding: '10px 14px', fontWeight: 600, fontSize: 13,
               boxShadow: 'var(--shadow-lg)', cursor: 'pointer', maxWidth: 320, color: 'var(--text)',
               display: 'flex', gap: 8, alignItems: 'center',
+              animation: 'toastIn 0.18s var(--ease)',
             }}>
             <Icon width={16} height={16} style={{ color: tone, flexShrink: 0 }} />
             <span>{t.message}</span>
@@ -144,7 +167,7 @@ export function AIProcessOverlay2({ runState }) {
         <div style={{ marginTop: 12, fontSize: 12, color: 'var(--muted)', textAlign: 'left' }}>
           {runState.steps.map((s, i) => (
             <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', padding: '2px 0' }}>
-              <span style={{ color: 'var(--green)' }}>✓</span><span>{s}</span>
+              <CheckCircle2 width={13} height={13} style={{ color: 'var(--green)', flexShrink: 0 }} /><span>{s}</span>
             </div>
           ))}
         </div>

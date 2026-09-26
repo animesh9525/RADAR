@@ -6,16 +6,19 @@ import { makeAnalyzer } from '../utils/analyzer';
 import { calculatePriorityScore, getPriorityCategory } from '../services/ai';
 import { aiBuildOptimizedPlan, aiPlanMetrics } from '../services/optimization';
 import { Panel, MetricCard } from '../components/ui';
+import { ensureChartTheme } from '../services/chartTheme';
 
-function ChartCanvas({ config, height = 260 }) {
+export function ChartCanvas({ config, height = 260 }) {
   const ref = useRef(null);
   const chartRef = useRef(null);
+  const { theme } = useApp();
   useEffect(() => {
     if (!ref.current) return;
+    ensureChartTheme();
     chartRef.current = new Chart(ref.current.getContext('2d'), config);
     return () => { if (chartRef.current) chartRef.current.destroy(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(config.data)]);
+  }, [JSON.stringify(config.data), theme]);
   return <div style={{ height }}><canvas ref={ref} /></div>;
 }
 
@@ -142,11 +145,69 @@ export function AnalyticsPage() {
     data: {
       labels: ['Blocks', 'Tasks Planned', 'Utilization %', 'Bundled', 'Conflicts'],
       datasets: [
-        { label: 'Manual / Current Plan', data: diff.manual, backgroundColor: 'rgba(148,163,184,.85)' },
-        { label: 'AI Optimized Plan', data: diff.ai, backgroundColor: 'rgba(59,130,246,.85)' },
+        {
+          label: 'Manual / Current Plan',
+          data: diff.manual,
+          backgroundColor: '#94a3b8',
+          borderColor: 'rgba(100, 116, 139, 0.9)',
+          borderWidth: 1,
+          borderRadius: 5,
+          categoryPercentage: 0.52,
+          barPercentage: 0.85,
+          maxBarThickness: 18,
+        },
+        {
+          label: 'AI Optimized Plan',
+          data: diff.ai,
+          backgroundColor: '#3b82f6',
+          borderColor: 'rgba(37, 99, 235, 0.9)',
+          borderWidth: 1,
+          borderRadius: 5,
+          categoryPercentage: 0.52,
+          barPercentage: 0.85,
+          maxBarThickness: 18,
+        },
       ],
     },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 420, easing: 'easeOutQuart' },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          align: 'center',
+          labels: {
+            boxWidth: 9,
+            boxHeight: 9,
+            usePointStyle: true,
+            pointStyle: 'circle',
+            padding: 14,
+            font: { size: 12, weight: '600' },
+          },
+        },
+        tooltip: {
+          caretSize: 4,
+          boxPadding: 5,
+          callbacks: {
+            label: (c) => ` ${c.dataset.label}: ${c.parsed.y}`,
+          },
+        },
+      },
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: {
+          grid: { display: false, drawBorder: false },
+          ticks: { padding: 8, font: { size: 11, weight: '600' } },
+        },
+        y: {
+          beginAtZero: true,
+          grid: { drawBorder: false, drawTicks: false },
+          border: { display: false },
+          ticks: { padding: 8, font: { size: 11 }, maxTicksLimit: 6 },
+        },
+      },
+    },
   };
 
   const weeklyConfig = {

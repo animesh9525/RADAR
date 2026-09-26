@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Sparkles, Play, RotateCcw, Search, PlayCircle, Brain, GitBranch, Lightbulb, Puzzle, Target, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Play, RotateCcw, Search, PlayCircle, Brain, GitBranch, Lightbulb, Puzzle, Target, CheckCircle2, ArrowRight, Wrench } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Panel, Badge, ProgressBar, ConfirmDialog } from '../components/ui';
 import { aiMetricList, aiChangeDescription } from '../services/optimization';
@@ -91,7 +91,7 @@ export function AIPlanningPage() {
           <div className="page-description">Run the prototype optimizer to compare the current plan against an AI-improved draft (not applied until a planner approves).</div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn btn-primary" onClick={run}><Play width={15} height={15} /> Run AI Optimization</button>
+          <button className="btn btn-ai" onClick={run}><Play width={15} height={15} /> Run AI Optimization</button>
           <button className="btn btn-secondary" onClick={() => { resetAiDemo(); showToast('Demo reset', 'info'); }}><RotateCcw width={15} height={15} /> Reset</button>
         </div>
       </div>
@@ -141,7 +141,7 @@ export function AIPlanningPage() {
         <Panel title="What Changed?" icon={<GitBranch width={18} height={18} color="var(--purple)" />} actions={
           <>
             <button className="btn btn-secondary btn-sm" onClick={() => setReviewing(true)}><Search width={13} height={13} /> Review Changes</button>
-            <button className="btn btn-primary btn-sm" onClick={() => aiDemo.changes?.length ? setConfirm(true) : showToast('Nothing to apply', 'error')} disabled={aiDemo.applied}><PlayCircle width={13} height={13} /> Apply to Planner</button>
+            <button className="btn btn-ai btn-sm" onClick={() => aiDemo.changes?.length ? setConfirm(true) : showToast('Nothing to apply', 'error')} disabled={aiDemo.applied}><PlayCircle width={13} height={13} /> Apply to Planner</button>
           </>
         }>
           {aiDemo.changes && aiDemo.changes.length > 0 ? (
@@ -151,7 +151,7 @@ export function AIPlanningPage() {
                 const sa = c.afterConf ? c.afterConf.all.length : 0;
                 return (
                   <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: 10, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--card)' }}>
-                    <span style={{ color: 'var(--purple)', flexShrink: 0 }}>{c.moved ? '→' : '⚙'}</span>
+                    <span style={{ color: 'var(--purple)', flexShrink: 0, display: 'inline-flex' }}>{c.moved ? <ArrowRight width={15} height={15} /> : <Wrench width={15} height={15} />}</span>
                     <div style={{ flex: 1, fontSize: 13 }}>
                       <div dangerouslySetInnerHTML={{ __html: aiChangeDescription(c).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') }} />
                       {reviewing && (
@@ -167,7 +167,7 @@ export function AIPlanningPage() {
               })}
             </div>
           ) : (
-            <div className="alert alert-green"><span className="alert-icon">✓</span><div>No changes required — the current plan is already conflict-free.</div></div>
+            <div className="alert alert-green"><CheckCircle2 width={15} height={15} style={{ color: 'var(--green)' }} /><div>No changes required — the current plan is already conflict-free.</div></div>
           )}
           {aiDemo.status && (
             <div className="alert alert-blue" style={{ marginTop: 12 }} dangerouslySetInnerHTML={{ __html: `<span class="alert-icon">i</span><div>${aiDemo.status}</div>` }} />
@@ -216,12 +216,14 @@ export function AIPlanningPage() {
               <b>AI Compatibility Check:</b>
               <div style={{ marginTop: 6 }}>
                 {BUNDLE_CHECKS.map(c => (
-                  <div key={c} style={{ fontSize: 12, lineHeight: 1.8 }}>✓ {c}</div>
+                  <div key={c} style={{ fontSize: 12, lineHeight: 1.8, display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <CheckCircle2 width={13} height={13} style={{ color: 'var(--green)', flexShrink: 0 }} /> {c}
+                  </div>
                 ))}
               </div>
             </div>
             <div className="alert alert-blue" style={{ marginTop: 12 }}>
-              <span className="alert-icon">🧩</span>
+              <Puzzle width={16} height={16} style={{ color: 'var(--purple)', flexShrink: 0 }} />
               <div><b>Result:</b> {blocks.find(b => b.type === 'COMBINED' && b.corridor === 'C1')?.id || 'B-042'} combines 3 compatible tasks into one coordinated maintenance block, improving utilization from 50% to 92%.</div>
             </div>
           </Panel>

@@ -8,7 +8,7 @@ const COLOR_BY_CORRIDOR = {
   C4: '#a78bfa',
 };
 
-export function NetworkSidebar({ blocks, analyzeConflicts, onToggle, onSelectBlock }) {
+export function NetworkSidebar({ blocks, analyzeConflicts, onToggle, onSelectBlock, selectedId }) {
   return (
     <aside className="no-side no-glass" id="noSide">
       <div className="no-side-hd">
@@ -27,7 +27,7 @@ export function NetworkSidebar({ blocks, analyzeConflicts, onToggle, onSelectBlo
           return (
             <div
               key={b.id}
-              className="no-bitem"
+              className={`no-bitem${selectedId === b.id ? ' sel' : ''}`}
               data-no={`block:${b.id}`}
               onClick={() => onSelectBlock && onSelectBlock(b.id)}
             >

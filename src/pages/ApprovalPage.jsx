@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ClipboardCheck, Check, X, Eye, Trash2, History, ShieldCheck } from 'lucide-react';
+import { ClipboardCheck, Check, X, Eye, Trash2, History, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { makeAnalyzer } from '../utils/analyzer';
 import { Panel, Badge, MetricCard, Modal, EmptyState, StatusBadge } from '../components/ui';
@@ -114,7 +114,7 @@ export function ApprovalPage() {
                     <td>{b.startTime}–{b.endTime}<div className="small" style={{ color: 'var(--muted)' }}>{b.date}</div></td>
                     <td><b>{pri}/100</b></td>
                     <td>
-                      {a.category === 'approved' ? <Badge tone="low">✓ APPROVED</Badge> : a.category === 'rejected' ? <Badge tone="critical">✕ REJECTED</Badge> : <Badge tone="info">PENDING</Badge>}
+                      {a.category === 'approved' ? <Badge tone="low"><Check width={12} height={12} /> APPROVED</Badge> : a.category === 'rejected' ? <Badge tone="critical"><X width={12} height={12} /> REJECTED</Badge> : <Badge tone="info">PENDING</Badge>}
                       <div className="small" style={{ color: 'var(--muted)' }}>{rec.title}</div>
                     </td>
                     <td><b>{sui}</b></td>
@@ -148,7 +148,9 @@ export function ApprovalPage() {
               Validation checks:<br />
               {manualResult.checks.map(c => (
                 <div key={c.label} style={{ margin: '2px 0' }}>
-                  {c.ok ? '✓' : c.warn ? '⚠' : '✕'} {c.label} — <b>{c.state}</b>
+                  <span style={{ display: 'inline-flex', verticalAlign: '-2px', color: c.ok ? 'var(--green)' : c.warn ? 'var(--orange)' : 'var(--red)' }}>
+                    {c.ok ? <Check width={13} height={13} /> : c.warn ? <AlertTriangle width={13} height={13} /> : <X width={13} height={13} />}
+                  </span> {c.label} — <b>{c.state}</b>
                   <span className="small" style={{ color: 'var(--muted)' }}> · {c.detail}</span>
                 </div>
               ))}

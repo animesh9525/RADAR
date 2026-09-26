@@ -49,11 +49,29 @@ const PLACE = {
   'B-050': { c: 'C4', leg: 1, lane: 0 },
 };
 
+const fitView = (n) => {
+  const proj = netProject(n, n.sat);
+  const pts = [];
+  Object.values(proj.stations || {}).forEach(p => pts.push(p[0], p[1]));
+  Object.values(proj.wired || {}).forEach(w => w.forEach(p => pts.push(p[0], p[1])));
+  if (!pts.length) return { k: 1.45, tx: 0, ty: 0 };
+  const minX = Math.min(...pts), maxX = Math.max(...pts);
+  const minY = Math.min(...pts), maxY = Math.max(...pts);
+  const spanX = maxX - minX, spanY = maxY - minY;
+  // Fit the whole operating area on both axes with comfortable margin.
+  const kX = (1200 - 120) / (spanX + 40);
+  const kY = (740 - 60) / (spanY + 40);
+  const k = Math.max(1.15, Math.min(1.7, Math.min(kX, kY)));
+  const cy = minY + spanY * 0.55; // bias toward the junction/stations cluster
+  const cx = (minX + maxX) / 2;
+  return { k, tx: 600 - k * cx, ty: 370 - k * cy };
+};
+
 export function NetworkOpsPage() {
   const { blocks, trains } = useApp();
   const net = DEMO_DATA.networkDemo || {
-    label: 'Kharagpur Jn · South Eastern Railway',
-    sat: { lng0: 87.32041, lat0: 22.33885, lonSpan: 0.030 },
+    label: 'Nashik Road · Central Railway',
+    sat: { lng0: 73.8425, lat0: 19.9491, lonSpan: 0.05 },
     stations: [],
     corridors: [],
     blocks: [],
@@ -62,18 +80,11 @@ export function NetworkOpsPage() {
   const analyzer = useMemo(() => makeAnalyzer(blocks, trains, undefined), [blocks, trains]);
 
   const [filter, setFilter] = useState('all');
-  const [layers, setLayers] = useState({
-    map: true,
-    rail: true,
-    block: true,
-    train: true,
-    conflict: true,
-    station: true,
-  });
   const [collapsed, setCollapsed] = useState(false);
-  const [view, setView] = useState({ k: 1, tx: 0, ty: 0 });
+  const [view, setView] = useState(() => fitView(net));
   const [detail, setDetail] = useState(null);
   const [tip, setTip] = useState(null);
+  const [hoverKey, setHoverKey] = useState(null);
 
   const satMapRef = useRef(null);
   const mapContainerRef = useRef(null);
@@ -99,7 +110,7 @@ export function NetworkOpsPage() {
     return netProject(net, net.sat);
   }, [net]);
 
-  // Initialize satellite Leaflet map behind SVG
+  // Initialize light vector Leaflet basemap behind SVG
   useEffect(() => {
     if (!mapContainerRef.current || satMapRef.current) return;
 
@@ -121,10 +132,11 @@ export function NetworkOpsPage() {
       markerZoomAnimation: false,
     });
 
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 20,
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
       maxNativeZoom: 19,
-      attribution: 'Imagery &copy; Esri, Maxar, Earthstar Geographics',
+      subdomains: 'abc',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       crossOrigin: true,
     }).addTo(satMap);
 
@@ -176,23 +188,36 @@ export function NetworkOpsPage() {
     satSync();
   }, [view, satSync]);
 
+  // ESC closes the details drawer
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setDetail(null);
+        setFilter('all');
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const handleFocus = useCallback((x, y, k) => {
-    const clampedK = Math.max(1, Math.min(3.4, k));
+    const clampedK = Math.max(1, Math.min(12, k));
     const tx = 1200 / 2 - clampedK * x;
     const ty = 740 / 2 - clampedK * y;
     setView({ k: clampedK, tx, ty });
   }, []);
 
   const handleResetView = useCallback(() => {
-    setView({ k: 1, tx: 0, ty: 0 });
+    setView(fitView(net));
     setDetail(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Pan & Zoom handlers
   const handleWheel = (e) => {
     e.preventDefault();
     const zoomFactor = e.deltaY < 0 ? 1.15 : 0.87;
-    const newK = Math.max(1, Math.min(3.4, view.k * zoomFactor));
+    const newK = Math.max(1, Math.min(12, view.k * zoomFactor));
     if (newK === view.k) return;
 
     // Zoom centered around mouse pointer
@@ -239,7 +264,15 @@ export function NetworkOpsPage() {
       const b = blocks.find(x => x.id === id);
       if (!b) return;
       const col = COLOR_BY_CORRIDOR[b.corridor] || '#94a3b8';
-      setDetail({ type: 'block', data: b, color: col });
+      const sui = analyzer ? analyzer.sui(b) : null;
+      const rec = analyzer ? analyzer.rec(b) : null;
+      setDetail({
+        type: 'block',
+        data: b,
+        color: col,
+        sui: sui ? { score: sui.score, factors: sui.analysis ? sui.analysis : sui.factors } : null,
+        rec: rec ? { title: rec.title, reason: rec.reason } : null,
+      });
 
       // auto zoom to block
       const pl = PLACE[b.id] || { c: b.corridor || 'C1', leg: 0, lane: 0 };
@@ -298,9 +331,11 @@ export function NetworkOpsPage() {
   const handleHover = (info) => {
     if (!info) {
       setTip(null);
+      setHoverKey(null);
       return;
     }
     const { value, rect } = info;
+    setHoverKey(value);
     const idx = value.indexOf(':');
     const kind = value.slice(0, idx);
     const id = value.slice(idx + 1);
@@ -384,20 +419,19 @@ export function NetworkOpsPage() {
     return txt;
   }, [totalConf, confs, bestBlock]);
 
-  // Layer string for data attribute
-  const activeLayersStr = useMemo(() => {
-    return Object.keys(layers).filter(k => layers[k]).join(' ');
-  }, [layers]);
+  const mapSelection = useMemo(() => {
+    if (!detail || !detail.data) return null;
+    return { kind: detail.type, id: detail.data.id };
+  }, [detail]);
 
   return (
     <div id="netopsWrapper">
       <div
         id="netopsApp"
         data-filter={filter}
-        data-layers={activeLayersStr}
-        className={`${collapsed ? 'no-col' : ''} ${view.k >= 1.6 ? 'no-zoomed' : ''}`}
+        className={collapsed ? 'no-col' : ''}
       >
-        {/* Header */}
+        {/* Merged Header + Toolbar Strip */}
         <div className="no-hd">
           <div className="no-ht">
             <span className="no-live">
@@ -406,25 +440,34 @@ export function NetworkOpsPage() {
             </span>
             NETWORK OPERATIONS
           </div>
-          <div className="no-sub">
-            Railway Network Intelligence · Synthetic demonstration data · Not operational authority
+          <div className="no-grp">
+            <span className="no-grp-label">VIEW</span>
+            <div className="no-chips">
+              {['all', 'blocks', 'trains', 'stations', 'conflicts', 'maintenance'].map(f => (
+                <button
+                  key={f}
+                  className={`no-chip ${filter === f ? 'active' : ''}`}
+                  onClick={() => setFilter(f)}
+                >
+                  {f.toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="no-stats">
-            <div className="no-stat">
-              <b>{trains.length}</b>
-              <span>Trains</span>
-            </div>
-            <div className="no-stat">
-              <b>{blocks.length}</b>
-              <span>Blocks</span>
-            </div>
-            <div className="no-stat">
-              <b>{Object.keys(projectedStations).length}</b>
-              <span>Stations</span>
-            </div>
-            <div className="no-stat">
-              <b>{totalConf}</b>
-              <span>Conflicts</span>
+          <div className="no-grp">
+            <span className="no-grp-label">CORRIDORS</span>
+            <div className="no-legend">
+              {['C1', 'C2', 'C3', 'C4'].map(cv => (
+                <div
+                  key={cv}
+                  className={`no-leg${detail && detail.type === 'corridor' && detail.data.id === cv ? ' active' : ''}`}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleSelect('corridor', cv)}
+                >
+                  <i style={{ background: COLOR_BY_CORRIDOR[cv] }} />
+                  {cv}
+                </div>
+              ))}
             </div>
           </div>
           <div className="no-htools">
@@ -439,31 +482,23 @@ export function NetworkOpsPage() {
           </div>
         </div>
 
-        {/* Toolbar with Filter Chips & Legend */}
-        <div className="no-tb">
-          <div className="no-chips">
-            {['all', 'blocks', 'trains', 'conflicts', 'maintenance'].map(f => (
-              <button
-                key={f}
-                className={`no-chip ${filter === f ? 'active' : ''}`}
-                onClick={() => setFilter(f)}
-              >
-                {f.toUpperCase()}
-              </button>
-            ))}
+        {/* Compact stats strip */}
+        <div className="no-stats">
+          <div className="no-stat">
+            <b>{trains.length}</b>
+            <span>Trains</span>
           </div>
-          <div className="no-legend">
-            {['C1', 'C2', 'C3', 'C4'].map(cv => (
-              <div
-                key={cv}
-                className="no-leg"
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleSelect('corridor', cv)}
-              >
-                <i style={{ background: COLOR_BY_CORRIDOR[cv] }} />
-                {cv}
-              </div>
-            ))}
+          <div className="no-stat">
+            <b>{blocks.length}</b>
+            <span>Blocks</span>
+          </div>
+          <div className="no-stat">
+            <b>{Object.keys(projectedStations).length}</b>
+            <span>Stations</span>
+          </div>
+          <div className="no-stat">
+            <b>{totalConf}</b>
+            <span>Conflicts</span>
           </div>
         </div>
 
@@ -478,8 +513,8 @@ export function NetworkOpsPage() {
             style={{ cursor: isDraggingRef.current ? 'grabbing' : 'grab' }}
           >
             <div className="no-map" id="noMap">
-              {/* Satellite tile layer */}
-              <div id="noSat" ref={mapContainerRef} aria-label="Satellite basemap" />
+              {/* Light vector tile basemap */}
+              <div id="noSat" ref={mapContainerRef} aria-label="Vector GIS basemap" />
 
               {/* SVG Railway Topology Overlay */}
               <NetworkMap
@@ -487,16 +522,17 @@ export function NetworkOpsPage() {
                 blocks={blocks}
                 trains={trains}
                 filter={filter}
-                layers={layers}
                 view={view}
                 onSelect={handleSelect}
                 onHover={handleHover}
                 analyzeConflicts={analyzeBlockConflict}
                 reducedMotion={reducedMotion}
+                selection={mapSelection}
+                hover={hoverKey}
               />
 
               {/* Corner disclaimer & Hint */}
-              <div className="no-corner">SATELLITE CONTEXT · SYNTHETIC DEMO DATA · NOT OPERATIONAL AUTHORITY</div>
+              <div className="no-corner">VECTOR GIS MAP · SYNTHETIC DEMO DATA · NOT OPERATIONAL AUTHORITY</div>
               <div className="no-hint">
                 <MousePointer2 width={12} height={12} />
                 Click elements for details · Scroll to zoom · Drag to pan
@@ -518,32 +554,6 @@ export function NetworkOpsPage() {
                 </div>
               )}
 
-              {/* Layer Toggles Panel */}
-              <div className="no-layers" aria-label="Map layers">
-                <div className="no-layers-tt">LAYERS</div>
-                {['map', 'rail', 'block', 'train', 'conflict', 'station'].map(layerKey => {
-                  const colors = {
-                    map: '#3a4a5a',
-                    rail: '#e2e8f0',
-                    block: '#fbbf24',
-                    train: '#38bdf8',
-                    conflict: '#f87171',
-                    station: '#34d399',
-                  };
-                  return (
-                    <label key={layerKey} className="no-layer">
-                      <input
-                        type="checkbox"
-                        checked={layers[layerKey]}
-                        onChange={e => setLayers(l => ({ ...l, [layerKey]: e.target.checked }))}
-                      />
-                      <i className="no-layersw" style={{ '--c': colors[layerKey] }} />
-                      {layerKey.toUpperCase()}
-                    </label>
-                  );
-                })}
-              </div>
-
               {/* Scale bar */}
               <div className="no-scalebar">
                 <i />
@@ -558,6 +568,7 @@ export function NetworkOpsPage() {
             analyzeConflicts={analyzeBlockConflict}
             onToggle={() => setCollapsed(c => !c)}
             onSelectBlock={bid => handleSelect('block', bid)}
+            selectedId={detail && detail.type === 'block' ? detail.data.id : null}
           />
 
           {/* Slide-out Details Drawer */}

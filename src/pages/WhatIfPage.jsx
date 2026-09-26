@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   GitBranch, Play, RotateCcw, RefreshCw, CheckCircle2, AlertTriangle, TrendingUp, Sparkles,
+  Shuffle, CalendarDays, Wrench,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { makeAnalyzer } from '../utils/analyzer';
@@ -112,7 +113,7 @@ export function WhatIfPage() {
         </select>
       }>
         {!original ? (
-          <EmptyState icon="🔀" title="Select a block" desc="Choose a maintenance block from the dropdown to begin." />
+          <EmptyState icon={Shuffle} title="Select a block" desc="Choose a maintenance block from the dropdown to begin." />
         ) : (
           <div style={{ display: 'grid', gap: 12 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -180,9 +181,9 @@ export function WhatIfPage() {
               ))}
             </div>
           ) : candidates !== null && candidates.length === 0 ? (
-            <EmptyState icon="🗓️" title="No alternative windows found" desc="All candidate windows are blocked by traffic or maintenance constraints." />
+            <EmptyState icon={CalendarDays} title="No alternative windows found" desc="All candidate windows are blocked by traffic or maintenance constraints." />
           ) : (
-            <EmptyState icon="🔧" title="Run the simulation first" desc="Then generate optimized plan candidates from the modified plan." />
+            <EmptyState icon={Wrench} title="Run the simulation first" desc="Then generate optimized plan candidates from the modified plan." />
           )}
         </Panel>
       )}
@@ -277,7 +278,7 @@ function BeforeAfterAIPanel({ blocks, trains, taskData, applyOptimizedPlanToPlan
         <div style={{ display: 'grid', gap: 16 }}>
           {changes.length === 0 ? (
             <div className="alert alert-green">
-              <span className="alert-icon">✓</span>
+              <CheckCircle2 width={15} height={15} style={{ color: 'var(--green)' }} />
               <div>No changes required — current plan already conflict-free.</div>
             </div>
           ) : (
@@ -450,7 +451,7 @@ function ResultsPanel({ result, analyzer }) {
             {m.conf.trainConflicts.map((c, i) => <div key={'t' + i} className="alert alert-red"><span className="alert-icon">!</span><div><b>Train Conflict</b> — {c.message} ({c.time})</div></div>)}
             {m.conf.blockConflicts.map((c, i) => <div key={'b' + i} className="alert alert-red"><span className="alert-icon">!</span><div><b>Block Overlap</b> — {c.message} ({c.overlap})</div></div>)}
             {m.conf.resourceConflicts.map((c, i) => <div key={'r' + i} className="alert alert-orange"><span className="alert-icon">!</span><div><b>Resource</b> — {c.message}</div></div>)}
-            {m.conf.all.length === 0 && <div className="alert alert-green"><span className="alert-icon">✓</span><div>No critical conflicts. Prototype analysis clear.</div></div>}
+            {m.conf.all.length === 0 && <div className="alert alert-green"><CheckCircle2 width={15} height={15} style={{ color: 'var(--green)' }} /><div>No critical conflicts. Prototype analysis clear.</div></div>}
           </div>
         </div>
       </Panel>
