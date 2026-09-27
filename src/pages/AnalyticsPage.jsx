@@ -55,7 +55,7 @@ function avgUtil(list) {
 }
 
 export function AnalyticsPage() {
-  const { blocks, tasks, trains, taskData } = useApp();
+  const { blocks, tasks, trains, taskData, theme } = useApp();
   const analyzer = useMemo(() => makeAnalyzer(blocks, trains, taskData), [blocks, trains, taskData]);
   const session = useMemo(() => ({ taskData, trainSchedule: trains, blocks }), [taskData, trains, blocks]);
 
@@ -168,6 +168,40 @@ export function AnalyticsPage() {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100 } } },
   };
 
+  // Green "before vs after" presentation. Values, labels, title and card are
+  // untouched — only the visual language changes: thick rounded columns, a
+  // recessive manual series, a dominant optimised series, one clean zero
+  // baseline, minimal gridlines and a compact floating tooltip card.
+  // Driven by the context `theme` value, not the `.dark` class: the class is
+  // synced in an effect after render, so reading it here would build the chart
+  // with the previous theme's palette.
+  const cmpDark = theme === 'dark';
+  const cmpPalette = cmpDark
+    ? {
+        optimized: '#22c55e',
+        manual: '#166534',
+        grid: 'rgba(148, 163, 184, 0.10)',
+        zeroLine: 'rgba(148, 163, 184, 0.32)',
+        cardBg: 'rgba(15, 23, 42, 0.98)',
+        cardBorder: 'rgba(148, 163, 184, 0.22)',
+        cardTitle: '#f8fafc',
+        cardBody: '#cbd5e1',
+        valueLabel: 'rgba(226, 232, 240, 0.92)',
+        tick: 'rgba(163, 178, 198, 0.85)',
+      }
+    : {
+        optimized: '#15803d',
+        manual: '#86efac',
+        grid: 'rgba(100, 116, 139, 0.10)',
+        zeroLine: 'rgba(100, 116, 139, 0.30)',
+        cardBg: '#ffffff',
+        cardBorder: 'rgba(15, 23, 42, 0.10)',
+        cardTitle: '#0f172a',
+        cardBody: '#334155',
+        valueLabel: 'rgba(51, 65, 85, 0.92)',
+        tick: '#64748b',
+      };
+
   const comparisonConfig = {
     type: 'bar',
     data: {
@@ -176,24 +210,24 @@ export function AnalyticsPage() {
         {
           label: 'Manual Baseline',
           data: diff.manual,
-          backgroundColor: '#94a3b8',
-          borderColor: 'rgba(100, 116, 139, 0.9)',
-          borderWidth: 1,
-          borderRadius: 5,
-          categoryPercentage: 0.56,
-          barPercentage: 0.82,
-          maxBarThickness: 26,
+          backgroundColor: cmpPalette.manual,
+          borderWidth: 0,
+          borderRadius: 6,
+          borderSkipped: false,
+          categoryPercentage: 0.68,
+          barPercentage: 0.92,
+          maxBarThickness: 30,
         },
         {
           label: 'AI Optimized',
           data: diff.ai,
-          backgroundColor: '#3b82f6',
-          borderColor: 'rgba(37, 99, 235, 0.9)',
-          borderWidth: 1,
-          borderRadius: 5,
-          categoryPercentage: 0.56,
-          barPercentage: 0.82,
-          maxBarThickness: 26,
+          backgroundColor: cmpPalette.optimized,
+          borderWidth: 0,
+          borderRadius: 6,
+          borderSkipped: false,
+          categoryPercentage: 0.68,
+          barPercentage: 0.92,
+          maxBarThickness: 30,
         },
       ],
     },
@@ -212,29 +246,48 @@ export function AnalyticsPage() {
             usePointStyle: true,
             pointStyle: 'circle',
             padding: 14,
+            color: cmpPalette.tick,
             font: { size: 12, weight: '600' },
           },
         },
         tooltip: {
+          backgroundColor: cmpPalette.cardBg,
+          titleColor: cmpPalette.cardTitle,
+          bodyColor: cmpPalette.cardBody,
+          borderColor: cmpPalette.cardBorder,
+          borderWidth: 1,
+          cornerRadius: 8,
+          padding: 10,
           caretSize: 4,
+          displayColors: true,
+          boxWidth: 8,
+          boxHeight: 8,
           boxPadding: 5,
+          usePointStyle: true,
+          titleFont: { weight: '700', size: 12 },
+          bodyFont: { size: 12 },
           callbacks: {
             label: (c) => ` ${c.dataset.label}: ${c.parsed.y}`,
           },
         },
-        abpsValueLabels: { color: 'rgba(100,116,139,0.95)' },
+        abpsValueLabels: { color: cmpPalette.valueLabel },
       },
       interaction: { mode: 'index', intersect: false },
       scales: {
         x: {
           grid: { display: false, drawBorder: false },
-          ticks: { padding: 8, font: { size: 11, weight: '600' } },
+          border: { display: false },
+          ticks: { padding: 8, color: cmpPalette.tick, font: { size: 11, weight: '600' } },
         },
         y: {
           beginAtZero: true,
-          grid: { drawBorder: false, drawTicks: false },
+          grid: {
+            drawBorder: false,
+            drawTicks: false,
+            color: (c) => (c.tick && c.tick.value === 0 ? cmpPalette.zeroLine : cmpPalette.grid),
+          },
           border: { display: false },
-          ticks: { padding: 8, font: { size: 11 }, maxTicksLimit: 6 },
+          ticks: { padding: 8, color: cmpPalette.tick, font: { size: 11 }, maxTicksLimit: 6 },
         },
       },
     },

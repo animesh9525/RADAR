@@ -10,6 +10,7 @@ import { useApp } from '../context/AppContext';
 import { FloatingAssistant } from './FloatingAssistant';
 import { GlobalSearch } from './GlobalSearch';
 import { UserIdentity } from './UserIdentity';
+import radarLogo from '../assets/radar-logo.png';
 
 const NAV = [
   {
@@ -67,7 +68,9 @@ export function Sidebar({ open, onClose }) {
         style={{ width: 300, flexShrink: 0, background: 'linear-gradient(180deg, #131c2f 0%, #0f172a 100%)', color: '#cbd5e1', borderRight: '1px solid #223049' }}
       >
         <div style={{ padding: '18px 20px', borderBottom: '1px solid #223049', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,var(--blue),var(--purple))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: '#fff', fontSize: 16, flexShrink: 0, boxShadow: '0 4px 12px -2px rgba(59,130,246,.5)' }}>R</div>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,var(--blue),var(--purple))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: '#fff', fontSize: 16, flexShrink: 0, boxShadow: '0 4px 12px -2px rgba(59,130,246,.5)' }}>
+            <img src={radarLogo} alt="RADAR" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 10, display: 'block' }} />
+          </div>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontWeight: 800, color: '#fff', fontSize: 16, lineHeight: 1.15, letterSpacing: '-0.01em' }}>RADAR</div>
             <div style={{ fontSize: 11, lineHeight: 1.25, color: '#64748b', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>Railway Automated Detection &amp; Analytics Resource</div>

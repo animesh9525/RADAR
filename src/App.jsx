@@ -32,9 +32,7 @@ function Shell() {
   const navigate = useNavigate();
 
   const handleAssignToBlock = (task) => {
-    console.log('DBG handleAssignToBlock', JSON.stringify({ id: task && task.id, hasFn: typeof assignTaskToBlock }));
     const blockId = assignTaskToBlock(task.id);
-    console.log('DBG blockId=', blockId);
     closeTaskModal();
     if (blockId) navigate('/block-planner', { state: { openBlock: blockId } });
   };

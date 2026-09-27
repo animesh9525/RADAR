@@ -76,8 +76,8 @@ export function AppProvider({ children }) {
   const [blockModal, setBlockModal] = useState({ open: false, block: null });
 
   const openTaskModal = useCallback((taskId) => {
-    const task = taskData[taskId] || tasks.find(t => t.id === taskId);
-    if (task) setTaskModal({ open: true, task });
+    const found = tasks.find(t => t.id === taskId) || taskData[taskId];
+    if (found) setTaskModal({ open: true, task: found.id ? found : { ...found, id: taskId } });
   }, [taskData, tasks]);
 
   const closeTaskModal = useCallback(() => {
@@ -310,14 +310,12 @@ export function AppProvider({ children }) {
   // both sides (block.tasks + task.block), persists it, and routes the block
   // back through the review queue exactly as a manual block edit does.
   const assignTaskToBlock = useCallback((taskId) => {
-    console.log('DBG assign enter', taskId, 'tasks=', tasks.length, 'blocks=', blocks.length);
     const task = tasks.find(t => t.id === taskId);
-    console.log('DBG task found=', !!task, 'task.block=', task && JSON.stringify(task.block));
     if (!task) { showToast(`Task ${taskId} not found`, 'error'); return null; }
 
     if (task.block) {
       const current = blocks.find(b => b.id === task.block);
-      showToast(`${task.id} is already assigned to ${task.block}`, 'info');
+      showToast(`${task.id} is already assigned to ${task.block} — opening that block`, 'info');
       return current ? current.id : task.block;
     }
 
@@ -335,8 +333,16 @@ export function AppProvider({ children }) {
     if (!target) { showToast('No blocks available to assign this task to', 'error'); return null; }
 
     const block = target.block;
-    const nextTasks = Array.isArray(block.tasks) ? block.tasks : [];
-    if (!nextTasks.includes(task.id)) nextTasks.push(task.id);
+    const entry = {
+      id: task.id,
+      name: (task.title || '').split(' · ')[1] || task.title || task.id,
+      department: task.department || '',
+      duration: task.duration || '',
+    };
+    // block.tasks holds task objects; keep that shape and never double-add.
+    const existing = Array.isArray(block.tasks) ? block.tasks : [];
+    const alreadyListed = existing.some(t => (t && typeof t === 'object' ? t.id : t) === task.id);
+    const nextTasks = alreadyListed ? existing : [...existing, entry];
 
     updateBlock(block.id, { tasks: nextTasks }, { requiresReview: true });
     setTasks(prev => prev.map(t => (t.id === task.id ? { ...t, block: block.id, status: 'Scheduled' } : t)));
