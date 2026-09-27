@@ -39,7 +39,7 @@ export function FloatingAssistant() {
         <div className="floating-ai-panel">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', borderBottom: '1px solid var(--border)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 14 }}>
-              <Sparkles width={16} height={16} color="var(--purple)" /> AI-ABPS Assistant
+              <Sparkles width={16} height={16} color="var(--purple)" /> RADAR Assistant
             </div>
             <button className="btn btn-ghost btn-sm" onClick={() => setOpen(false)}><X width={15} height={15} /></button>
           </div>

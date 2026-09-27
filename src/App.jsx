@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import { AppLayout } from './components/layout';
 import { ToastHost, AIProcessOverlay2 } from './components/ui';
@@ -28,7 +28,17 @@ import { DataIntegPage } from './pages/DataIntegPage';
 import { SettingsPage } from './pages/SettingsPage';
 
 function Shell() {
-  const { user, toasts, aiRunState, dismissToast, taskModal, closeTaskModal, blockModal, closeBlockModal, trains, taskData, deleteBlock } = useApp();
+  const { user, toasts, aiRunState, dismissToast, taskModal, closeTaskModal, blockModal, closeBlockModal, trains, taskData, deleteBlock, assignTaskToBlock } = useApp();
+  const navigate = useNavigate();
+
+  const handleAssignToBlock = (task) => {
+    console.log('DBG handleAssignToBlock', JSON.stringify({ id: task && task.id, hasFn: typeof assignTaskToBlock }));
+    const blockId = assignTaskToBlock(task.id);
+    console.log('DBG blockId=', blockId);
+    closeTaskModal();
+    if (blockId) navigate('/block-planner', { state: { openBlock: blockId } });
+  };
+
   return (
     <>
       {!user ? (
@@ -76,7 +86,7 @@ function Shell() {
         <TaskModal
           task={taskModal.task}
           onClose={closeTaskModal}
-          onAssignToBlock={() => closeTaskModal()}
+          onAssignToBlock={handleAssignToBlock}
         />
       )}
 

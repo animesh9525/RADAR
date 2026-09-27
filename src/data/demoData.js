@@ -751,7 +751,7 @@ export const DEMO_DATA = {
       "duration": "85 min",
       "due": "Tuesday",
       "risk": 78,
-      "block": "B-048",
+      "block": null,
       "reason": "Requires dedicated engineering crew and uninterrupted track access."
     },
     "T155": {
@@ -806,7 +806,7 @@ export const DEMO_DATA = {
       "duration": "80 min",
       "due": "Friday",
       "risk": 38,
-      "block": "B-050",
+      "block": null,
       "reason": "Lower-priority preventive work kept separate due to duration."
     }
   },

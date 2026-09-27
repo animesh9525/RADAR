@@ -150,7 +150,7 @@ export function DataIntegPage() {
         <Panel title="Import Complete" icon={<CheckCircle2 width={18} height={18} color="var(--green)" />}>
           <div className="alert alert-green"><CheckCircle2 width={15} height={15} style={{ color: 'var(--green)' }} /><div>Dataset imported — {done.tasks} tasks, {done.assets} assets, {done.trains} trains, {done.resources} resources, {done.blocks} blocks.</div></div>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button className="btn btn-secondary btn-sm" onClick={() => addNotification('AI analysis complete — imported dataset ready for planning')}><Sparkles width={13} height={13} /> Analyze with AI-ABPS</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => addNotification('AI analysis complete — imported dataset ready for planning')}><Sparkles width={13} height={13} /> Analyze with RADAR</button>
             <button className="btn btn-secondary btn-sm" onClick={() => setConfirmReset(true)}><RotateCcw width={13} height={13} /> Reset to Demo Data</button>
           </div>
         </Panel>

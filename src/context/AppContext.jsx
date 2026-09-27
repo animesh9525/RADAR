@@ -5,6 +5,7 @@ import * as storage from '../services/storage';
 import { normBundle, diValidate, applyBundleToState } from '../services/import';
 import { recordApproval, makeAudit, pushAudit } from '../services/approval';
 import { aiBuildOptimizedPlan, aiPlanMetrics } from '../services/optimization';
+import { calculateSuitabilityScore } from '../services/ai';
 import { createSimulationCopy } from '../services/whatif';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
@@ -304,6 +305,47 @@ export function AppProvider({ children }) {
     showToast('Demo data restored', 'success');
   }, [showToast]);
 
+  // ----- task -> block assignment (Task Register "Assign to Block") -----
+  // Picks the best-suitability target block for a task, commits the link on
+  // both sides (block.tasks + task.block), persists it, and routes the block
+  // back through the review queue exactly as a manual block edit does.
+  const assignTaskToBlock = useCallback((taskId) => {
+    console.log('DBG assign enter', taskId, 'tasks=', tasks.length, 'blocks=', blocks.length);
+    const task = tasks.find(t => t.id === taskId);
+    console.log('DBG task found=', !!task, 'task.block=', task && JSON.stringify(task.block));
+    if (!task) { showToast(`Task ${taskId} not found`, 'error'); return null; }
+
+    if (task.block) {
+      const current = blocks.find(b => b.id === task.block);
+      showToast(`${task.id} is already assigned to ${task.block}`, 'info');
+      return current ? current.id : task.block;
+    }
+
+    const candidates = blocks
+      .map(b => ({ block: b, suitability: calculateSuitabilityScore(b, { blocks, trainSchedule: trains, taskData }) }))
+      .sort((a, b) => {
+        const aCorr = a.block.corridor === task.corridor ? 1 : 0;
+        const bCorr = b.block.corridor === task.corridor ? 1 : 0;
+        if (aCorr !== bCorr) return bCorr - aCorr;
+        if (b.suitability.score !== a.suitability.score) return b.suitability.score - a.suitability.score;
+        return a.block.id.localeCompare(b.block.id);
+      });
+
+    const target = candidates[0];
+    if (!target) { showToast('No blocks available to assign this task to', 'error'); return null; }
+
+    const block = target.block;
+    const nextTasks = Array.isArray(block.tasks) ? block.tasks : [];
+    if (!nextTasks.includes(task.id)) nextTasks.push(task.id);
+
+    updateBlock(block.id, { tasks: nextTasks }, { requiresReview: true });
+    setTasks(prev => prev.map(t => (t.id === task.id ? { ...t, block: block.id, status: 'Scheduled' } : t)));
+    setTaskData(td => (td && td[task.id] ? { ...td, [task.id]: { ...td[task.id], block: block.id, status: 'Scheduled' } } : td));
+    addAudit('edit', `Block ${block.id} was modified by ${user ? user.name : 'Demo Planner'}`, `Task ${task.id} assigned — block updated and moved back to review queue`, block.id, false);
+    showToast(`${task.id} assigned to ${block.id} (suitability ${target.suitability.score})`, 'success');
+    return block.id;
+  }, [tasks, blocks, trains, taskData, updateBlock, addAudit, showToast, user]);
+
   // ----- what-if -----
   const setWhatIfState = useCallback((patch) => setWhatIf(w => ({ ...w, ...patch })), []);
 
@@ -353,11 +395,17 @@ export function AppProvider({ children }) {
   // ----- tickets (operational wall) -----
   const tickets = TICKETS;
 
+  // ----- corridors (single source: demo network model) -----
+  const corridors = useMemo(
+    () => (demo.DEMO_DATA.networkDemo && demo.DEMO_DATA.networkDemo.corridors) || [],
+    []
+  );
+
   const value = {
     user, login, logout,
     theme, toggleTheme,
     datasource, setDatasource,
-    taskData, blocks, tasks, trains, crew, equipment, assets, blockData,
+    taskData, blocks, tasks, trains, crew, equipment, assets, blockData, corridors,
     approvals, auditRecords, session,
     notifications, addNotification, clearNotifications,
     selectedTasks, setSelectedTasks,
@@ -368,7 +416,7 @@ export function AppProvider({ children }) {
     toasts, showToast, dismissToast,
     taskModal, openTaskModal, closeTaskModal,
     blockModal, openBlockModal, closeBlockModal,
-    updateBlock, addBlock, deleteBlock, setTaskPriority,
+    updateBlock, addBlock, deleteBlock, setTaskPriority, assignTaskToBlock,
     doRecordApproval, addAudit, clearAudit,
     loadBundleForPreview, importBundle, resetToDemo,
     applyOptimizedPlanToPlanner,

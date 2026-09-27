@@ -11,7 +11,7 @@ const STEPS = [
     title: 'The Mission',
     icon: Presentation,
     screen: '/',
-    callout: 'Railway maintenance needs track access — but each block must be coordinated with train movements, crews and conflicting work. AI-ABPS turns maintenance tasks, asset condition, train schedule and resources into <b>coordinated, explainable block plans</b> — with a human always authorizing the final decision.',
+    callout: 'Railway maintenance needs track access — but each block must be coordinated with train movements, crews and conflicting work. RADAR turns maintenance tasks, asset condition, train schedule and resources into <b>coordinated, explainable block plans</b> — with a human always authorizing the final decision.',
     highlight: null,
   },
   {
@@ -100,7 +100,7 @@ const STEPS = [
     title: 'Success',
     icon: Trophy,
     screen: '/',
-    callout: 'AI-ABPS delivers <b>coordinated, explainable, human-approved</b> maintenance block plans. From task intake to conflict-free execution — intelligent automation meets railway operational reality. <b>Prototype demonstration complete.</b>',
+    callout: 'RADAR delivers <b>coordinated, explainable, human-approved</b> maintenance block plans. From task intake to conflict-free execution — intelligent automation meets railway operational reality. <b>Prototype demonstration complete.</b>',
     highlight: '.app-card',
     delay: 150,
   },

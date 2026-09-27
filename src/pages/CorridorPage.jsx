@@ -1,22 +1,38 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Map as MapIcon, TrainFront, Wrench } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { makeAnalyzer } from '../utils/analyzer';
-import { DEMO_DATA } from '../data/demoData';
 import { Panel, Badge } from '../components/ui';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 export function CorridorPage() {
-  const { blocks, trains, taskData } = useApp();
+  const { blocks, trains, taskData, corridors } = useApp();
+  const location = useLocation();
   const analyzer = useMemo(() => makeAnalyzer(blocks, trains, taskData), [blocks, trains, taskData]);
   const [day, setDay] = useState('Monday');
-  const net = DEMO_DATA.networkDemo;
+  const pendingCorridor = location.state && location.state.focusCorridor;
+  const lastPending = useRef(null);
+  const wrapRef = useRef(null);
 
-  const corridors = Object.keys(net.corridors || {});
+  // Global search / deep link to a corridor: reveal it inside the scroll owner.
+  useEffect(() => {
+    if (!pendingCorridor || pendingCorridor === lastPending.current) return;
+    lastPending.current = pendingCorridor;
+    requestAnimationFrame(() => {
+      const el = wrapRef.current && wrapRef.current.querySelector(`[data-corridor-id="${pendingCorridor}"]`);
+      if (!el) return;
+      const scroller = el.closest('.app-main') || window;
+      if (scroller === window) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+      const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+      const target = Math.max(0, top - (parseFloat(getComputedStyle(scroller).scrollPaddingTop) || 0));
+      scroller.scrollTo({ top: target, behavior: 'smooth' });
+    });
+  }, [pendingCorridor]);
 
   return (
-    <div style={{ display: 'grid', gap: 18 }}>
+    <div style={{ display: 'grid', gap: 18 }} ref={wrapRef}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
         <div>
           <div className="page-title">Live Corridor Map</div>
@@ -28,13 +44,13 @@ export function CorridorPage() {
       </div>
 
       <div style={{ display: 'grid', gap: 16 }}>
-        {corridors.map(cid => {
-          const co = net.corridors[cid];
+        {corridors.map(co => {
+          const cid = co.id;
           const stations = co.stations || [];
           const dayBlocks = blocks.filter(b => b.corridor === cid && b.date === day);
           const dayTrains = trains.filter(t => t.corridor === cid && t.date === day);
           return (
-            <Panel key={cid} title={`Corridor ${cid}`} icon={<MapIcon width={16} height={16} color={co.color} />} actions={
+            <Panel key={cid} data-corridor-id={cid} title={`Corridor ${cid}`} icon={<MapIcon width={16} height={16} color={co.color} />} actions={
               <div style={{ display: 'flex', gap: 6 }}>
                 <Badge tone="info"><Wrench width={11} height={11} /> {dayBlocks.length} blocks</Badge>
                 <Badge tone="plain"><TrainFront width={11} height={11} /> {dayTrains.length} trains</Badge>
@@ -57,7 +73,7 @@ export function CorridorPage() {
                 ) : dayBlocks.map(b => {
                   const a = analyzer.analyze(b);
                   return (
-                    <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', fontSize: 12, padding: '6px 10px', border: '1px solid var(--border)', borderLeft: `3px solid ${a.hasCritical ? 'var(--red)' : 'var(--green)'}`, borderRadius: 8 }}>
+                    <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', fontSize: 12, padding: '6px 10px', borderStyle: 'solid', borderTopWidth: 1, borderRightWidth: 1, borderBottomWidth: 1, borderLeftWidth: 3, borderTopColor: 'var(--border)', borderRightColor: 'var(--border)', borderBottomColor: 'var(--border)', borderLeftColor: a.hasCritical ? 'var(--red)' : 'var(--green)', borderRadius: 8 }}>
                       <span><b>{b.id}</b> · {b.from} → {b.to}</span>
                       <span style={{ color: 'var(--muted)' }}>{b.startTime}–{b.endTime} · {b.track}</span>
                       {a.hasCritical ? <Badge tone="critical">Conflict</Badge> : <Badge tone="low">Clear</Badge>}

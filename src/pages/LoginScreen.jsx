@@ -12,8 +12,8 @@ export function LoginScreen() {
           <div style={{ width: 64, height: 64, margin: '0 auto 14px', borderRadius: 18, background: 'linear-gradient(135deg,var(--blue),var(--purple))', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 12px 30px rgba(59,130,246,.4)' }}>
             <Cpu width={30} height={30} color="#fff" />
           </div>
-          <h1 style={{ color: '#fff', fontWeight: 900 }}>AI-ABPS</h1>
-          <p style={{ color: '#94a3b8', fontSize: 15, marginTop: 6 }}>AI-driven Block Planning &amp; Scheduling System</p>
+          <h1 style={{ color: '#fff', fontWeight: 900 }}>RADAR</h1>
+          <p style={{ color: '#94a3b8', fontSize: 15, marginTop: 6 }}>Railway Automated Detection &amp; Analytics Resource</p>
         </div>
 
         <div style={{ background: 'var(--card)', borderRadius: 16, border: '1px solid var(--border)', boxShadow: '0 30px 60px rgba(0,0,0,.3)', padding: 26 }}>

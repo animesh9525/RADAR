@@ -4,10 +4,12 @@ import {
   LayoutDashboard, ClipboardList, Calendar, CalendarDays, GitBranch,
   RadioTower, AlertTriangle, Map, HardHat, BarChart3, Flame,
   ClipboardCheck, Database, Settings,
-  Moon, Sun, Bell, LogOut, Search, PanelLeft,
+  Moon, Sun, Bell, LogOut, PanelLeft,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { FloatingAssistant } from './FloatingAssistant';
+import { GlobalSearch } from './GlobalSearch';
+import { UserIdentity } from './UserIdentity';
 
 const NAV = [
   {
@@ -54,22 +56,24 @@ const NAV = [
 ];
 
 export function Sidebar({ open, onClose }) {
-  const { user, logout } = useApp();
+  const { logout } = useApp();
   return (
     <>
       {open && (
         <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,.5)', zIndex: 40, display: 'block' }} />
       )}
-      <aside className={`${open ? 'translate-x-0' : '-translate-x-full'} fixed lg:static inset-y-0 left-0 z-50 flex flex-col transition-transform lg:translate-x-0`}
-        style={{ width: 300, background: 'linear-gradient(180deg, #131c2f 0%, #0f172a 100%)', color: '#cbd5e1', borderRight: '1px solid #223049' }}>
+      <aside
+        className={`${open ? 'translate-x-0' : '-translate-x-full'} fixed lg:relative inset-y-0 lg:inset-y-auto left-0 z-50 flex h-[100dvh] lg:h-auto flex-col overflow-hidden transition-transform lg:translate-x-0`}
+        style={{ width: 300, flexShrink: 0, background: 'linear-gradient(180deg, #131c2f 0%, #0f172a 100%)', color: '#cbd5e1', borderRight: '1px solid #223049' }}
+      >
         <div style={{ padding: '18px 20px', borderBottom: '1px solid #223049', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,var(--blue),var(--purple))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: '#fff', fontSize: 16, flexShrink: 0, boxShadow: '0 4px 12px -2px rgba(59,130,246,.5)' }}>A</div>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,var(--blue),var(--purple))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: '#fff', fontSize: 16, flexShrink: 0, boxShadow: '0 4px 12px -2px rgba(59,130,246,.5)' }}>R</div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 800, color: '#fff', fontSize: 16, lineHeight: 1.15, letterSpacing: '-0.01em' }}>AI-ABPS</div>
-            <div style={{ fontSize: 11, color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>AI Block Planning System</div>
+            <div style={{ fontWeight: 800, color: '#fff', fontSize: 16, lineHeight: 1.15, letterSpacing: '-0.01em' }}>RADAR</div>
+            <div style={{ fontSize: 11, lineHeight: 1.25, color: '#64748b', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>Railway Automated Detection &amp; Analytics Resource</div>
           </div>
         </div>
-        <nav style={{ flex: 1, overflowY: 'auto', padding: '6px 10px 12px', scrollbarWidth: 'thin' }}>
+        <nav className="sidebar-nav">
           {NAV.map(sec => (
             <div className="nav-section" key={sec.group}>
               <div className="nav-section-label">{sec.group}</div>
@@ -88,14 +92,10 @@ export function Sidebar({ open, onClose }) {
             </div>
           ))}
         </nav>
-        <div style={{ padding: 12, borderTop: '1px solid #223049' }}>
+        <div style={{ padding: 12, borderTop: '1px solid #223049', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: 'rgba(148,163,184,0.08)', borderRadius: 10, border: '1px solid rgba(148,163,184,0.14)' }}>
-            <div style={{ width: 30, height: 30, borderRadius: 99, background: 'var(--purple)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 12 }}>{(user?.name || 'DP').slice(0, 2).toUpperCase()}</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 700, color: '#fff', fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name || 'Demo Planner'}</div>
-              <div style={{ fontSize: 11, color: '#64748b' }}>{user?.role || 'Planner'}</div>
-            </div>
-            <button className="btn btn-ghost btn-sm" style={{ color: '#94a3b8' }} onClick={logout} title="Sign out"><LogOut width={15} height={15} /></button>
+            <UserIdentity variant="sidebar" />
+            <button className="btn btn-ghost btn-sm" style={{ color: '#94a3b8', flexShrink: 0 }} onClick={logout} title="Sign out"><LogOut width={15} height={15} /></button>
           </div>
         </div>
       </aside>
@@ -103,19 +103,14 @@ export function Sidebar({ open, onClose }) {
   );
 }
 
-export function Topbar() {
-  const { theme, toggleTheme, notifications, clearNotifications, datasource, user } = useApp();
+export function Topbar({ onToggleMobileNav }) {
+  const { theme, toggleTheme, notifications, clearNotifications, datasource } = useApp();
   const [notifOpen, setNotifOpen] = useState(false);
-  const [mobileNav, setMobileNav] = useState(false);
   return (
-    <header className="top-bar sticky top-0 z-30" style={{ height: 62 }}>
+    <header className="top-bar" style={{ height: 62, flex: '0 0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, height: '100%', padding: '0 16px' }}>
-        <button className="btn btn-ghost btn-sm lg:hidden" onClick={() => setMobileNav(v => !v)} title="Open navigation"><PanelLeft width={18} height={18} /></button>
-        <MobileSidebar open={mobileNav} onClose={() => setMobileNav(false)} />
-        <div className="top-search">
-          <Search width={16} height={16} />
-          <input className="field-input" placeholder="Search blocks, tasks, corridors…" />
-        </div>
+        <button className="btn btn-ghost btn-sm lg:hidden" onClick={onToggleMobileNav} title="Open navigation"><PanelLeft width={18} height={18} /></button>
+        <GlobalSearch />
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
           <span className="badge info hidden md:inline-flex" style={{ fontSize: 11 }}><Database width={12} height={12} /> {datasource?.label || 'Synthetic Demo Dataset'}</span>
           <div style={{ position: 'relative' }}>
@@ -143,13 +138,9 @@ export function Topbar() {
           </button>
           <div className="realtime-dot" title="Realtime" />
           <span className="badge low hidden lg:inline-flex" style={{ fontSize: 11 }}>REALTIME</span>
-          <div className="profile-chip lg:hidden" title={`Signed in as ${user?.name || 'Demo Planner'}`} style={{ marginLeft: 2 }}>
-            <span className="profile-chip-avatar">{(user?.name || 'Demo Planner').slice(0, 2).toUpperCase()}</span>
-            <span style={{ display: 'flex', flexDirection: 'column' }}>
-              <span className="profile-chip-name">{user?.name || 'Demo Planner'}</span>
-              <span className="profile-chip-role">{user?.role || 'Planner'}</span>
-            </span>
-          </div>
+          <span className="lg:hidden" style={{ marginLeft: 2, display: 'inline-flex' }}>
+            <UserIdentity variant="chip" />
+          </span>
         </div>
       </div>
     </header>
@@ -160,7 +151,9 @@ function MobileSidebar({ open, onClose }) {
   if (!open) return null;
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,.5)', zIndex: 60 }} />
+      {/* No separate scrim here: <Sidebar open> already renders a single
+          full-viewport dim overlay wired to onClose. Two stacked overlays
+          would dim the page twice. */}
       <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 70 }}>
         <Sidebar open onClose={onClose} />
       </div>
@@ -169,20 +162,27 @@ function MobileSidebar({ open, onClose }) {
 }
 
 export function AppLayout() {
+  // The mobile drawer is rendered at shell level, NOT inside the topbar: the
+  // topbar sets `backdrop-filter`, which makes it the containing block for
+  // `position: fixed` descendants. Nesting the drawer there clamped its scrim
+  // to the 61px header, so the dim overlay never covered the page and
+  // click-outside-to-close could not fire.
+  const [mobileNav, setMobileNav] = useState(false);
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
+    <div className="app-shell">
       <Sidebar open={false} onClose={() => {}} />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        <Topbar />
-        <main className="flex-1" style={{ padding: 20 }}>
+      <div className="app-column">
+        <Topbar onToggleMobileNav={() => setMobileNav(v => !v)} />
+        <main className="app-main">
           <Outlet />
         </main>
-        <footer style={{ borderTop: '1px solid var(--border)', padding: '10px 20px', fontSize: 12, color: 'var(--muted)', display: 'flex', justifyContent: 'space-between', gap: 8, background: 'var(--surface)' }}>
-          <span>AI-ABPS · AI Block Planning System · Synthetic demo data</span>
+        <footer className="app-footer">
+          <span>RADAR · Railway Automated Detection &amp; Analytics Resource · Synthetic demo data</span>
           <span>Prototype · Not an operational authority</span>
         </footer>
       </div>
       <FloatingAssistant />
+      <MobileSidebar open={mobileNav} onClose={() => setMobileNav(false)} />
     </div>
   );
 }

@@ -97,8 +97,10 @@ export function WeeklyPage() {
                           }}
                           onDragEnd={() => setDragId(null)}
                           style={{
-                            border: '1px solid var(--border)',
-                            borderLeft: `3px solid ${a.hasCritical ? 'var(--red)' : a.hasConflict ? 'var(--orange)' : 'var(--green)'}`,
+                              borderStyle: 'solid',
+                              borderTopWidth: 1, borderRightWidth: 1, borderBottomWidth: 1, borderLeftWidth: 3,
+                              borderTopColor: 'var(--border)', borderRightColor: 'var(--border)', borderBottomColor: 'var(--border)',
+                              borderLeftColor: a.hasCritical ? 'var(--red)' : a.hasConflict ? 'var(--orange)' : 'var(--green)',
                             borderRadius: 8, padding: 8, background: 'var(--card)', cursor: 'grab',
                             opacity: dragId === b.id ? .5 : 1,
                           }}

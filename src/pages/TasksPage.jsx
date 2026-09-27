@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Brain, Search, ClipboardList } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { calculatePriorityScore, getPriorityCategory, calculateSuitabilityScore } from '../services/ai';
 import { Badge, Panel, EmptyState, MetricCard, Modal, ProgressBar } from '../components/ui';
@@ -15,10 +15,26 @@ const FACTOR_WEIGHTS = [
 
 export function TasksPage() {
   const { tasks, blocks, trains, openTaskModal } = useApp();
+  const location = useLocation();
   const navigate = useNavigate();
   const [tab, setTab] = useState('All');
   const [q, setQ] = useState('');
   const [detail, setDetail] = useState(null);
+  const pendingTask = location.state && location.state.openTask;
+  const lastPending = useRef(null);
+
+  // Global search / deep link to a specific task: open it through the same
+  // existing modal the table rows use, and clear the flag so a manual refresh
+  // or back navigation does not re-open it.
+  useEffect(() => {
+    if (!pendingTask || pendingTask === lastPending.current) return;
+    lastPending.current = pendingTask;
+    setDetail(null);
+    openTaskModal(pendingTask);
+    if (window.history.state && window.history.state.usr) {
+      window.history.replaceState({ ...window.history.state, usr: null }, '');
+    }
+  }, [pendingTask, openTaskModal]);
 
   const tbl = useMemo(() => {
     return tasks.map(t => {

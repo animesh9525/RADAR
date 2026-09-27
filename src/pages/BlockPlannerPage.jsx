@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import {
   Plus, Search, Filter, Save, X, Trash2, GitBranch, Clock, CalendarDays,
@@ -29,12 +29,27 @@ export function BlockPlannerPage() {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [detailBlock, setDetailBlock] = useState(null);
   const [candidateResults, setCandidateResults] = useState(null);
+  const detailRef = useRef(null);
 
   // route state to open a specific block
   useEffect(() => {
     if (location.state && location.state.openBlock) {
       setSelectedId(location.state.openBlock);
       setDetailBlock(location.state.openBlock);
+      // The shell scrolls <main>, not the document. Reveal the detail panel
+      // inside whichever scroll container owns it (.app-main has scroll-padding).
+      requestAnimationFrame(() => {
+        const el = detailRef.current;
+        if (!el) return;
+        const scroller = el.closest('.app-main') || window;
+        if (scroller === window) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+        const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+        const target = Math.max(0, top - (parseFloat(getComputedStyle(scroller).scrollPaddingTop) || 0));
+        scroller.scrollTo({ top: target, behavior: 'smooth' });
+      });
     }
   }, [location.state]);
 
@@ -105,8 +120,12 @@ export function BlockPlannerPage() {
                     key={b.id}
                     onClick={() => { setSelectedId(b.id); setDetailBlock(b.id); }}
                     style={{
-                      border: `1px solid ${detailBlock === b.id ? 'var(--blue)' : 'var(--border)'}`,
-                      borderLeft: `4px solid ${a.hasCritical ? 'var(--red)' : a.hasConflict ? 'var(--orange)' : 'var(--border)'}`,
+                      borderStyle: 'solid',
+                      borderTopWidth: 1, borderRightWidth: 1, borderBottomWidth: 1, borderLeftWidth: 4,
+                      borderTopColor: detailBlock === b.id ? 'var(--blue)' : 'var(--border)',
+                      borderRightColor: detailBlock === b.id ? 'var(--blue)' : 'var(--border)',
+                      borderBottomColor: detailBlock === b.id ? 'var(--blue)' : 'var(--border)',
+                      borderLeftColor: a.hasCritical ? 'var(--red)' : a.hasConflict ? 'var(--orange)' : 'var(--border)',
                       borderRadius: 10, padding: '10px 12px', cursor: 'pointer', background: detailBlock === b.id ? 'rgba(59,130,246,.05)' : 'var(--card)',
                     }}
                   >
@@ -139,19 +158,21 @@ export function BlockPlannerPage() {
 
         <div style={{ display: 'grid', gap: 18 }}>
           {selected ? (
-            <BlockDetailPanel
-              key={selected.id}
-              block={selected}
-              analyzer={analyzer}
-              approvals={approvals}
-              onEdit={() => setEditing(selected.id)}
-              onDelete={() => setConfirmDelete(selected)}
-              candidates={candidateResults}
-              onExplore={async () => { const r = exploreCandidateWindows(selected, analyzer.session); setCandidateResults(r); if (!r.length) showToast('No alternative windows found', 'info'); }}
-              onApplyCandidate={(cand) => { applyOptimizedPlanToPlanner(cand); setCandidateResults(null); }}
-              onClose={() => { setDetailBlock(null); setSelectedId(null); setCandidateResults(null); }}
-              onAnalyzeImpact={() => handleAnalyzeImpact(selected.id)}
-            />
+            <div ref={detailRef} data-block-detail={selected.id}>
+              <BlockDetailPanel
+                key={selected.id}
+                block={selected}
+                analyzer={analyzer}
+                approvals={approvals}
+                onEdit={() => setEditing(selected.id)}
+                onDelete={() => setConfirmDelete(selected)}
+                candidates={candidateResults}
+                onExplore={async () => { const r = exploreCandidateWindows(selected, analyzer.session); setCandidateResults(r); if (!r.length) showToast('No alternative windows found', 'info'); }}
+                onApplyCandidate={(cand) => { applyOptimizedPlanToPlanner(cand); setCandidateResults(null); }}
+                onClose={() => { setDetailBlock(null); setSelectedId(null); setCandidateResults(null); }}
+                onAnalyzeImpact={() => handleAnalyzeImpact(selected.id)}
+              />
+            </div>
           ) : (
             <Panel title="Block Details" icon={<Sparkles width={18} height={18} color="var(--purple)" />}>
               <EmptyState icon={MousePointerClick} title="Select a block" desc="Choose a maintenance block to view its AI explanation, conflicts, and planning windows." />

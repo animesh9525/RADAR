@@ -109,7 +109,7 @@ export function SettingsPage() {
 
       <Panel title="About" icon={<Info width={18} height={18} color="var(--muted)" />}>
         <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.7 }}>
-          <b>AI-ABPS</b> — AI-Based Block Planning System (prototype). React + Tailwind (Vite) port of the legacy single-file HTML application. All AI outputs derive from deterministic synthetic demo data and rule-based scoring — no trained ML model is used.
+          <b>RADAR</b> — Railway Automated Detection &amp; Analytics Resource (prototype). React + Tailwind (Vite) port of the legacy single-file HTML application. All AI outputs derive from deterministic synthetic demo data and rule-based scoring — no trained ML model is used.
         </div>
       </Panel>
 

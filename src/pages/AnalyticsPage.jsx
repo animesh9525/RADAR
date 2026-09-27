@@ -8,17 +8,45 @@ import { aiBuildOptimizedPlan, aiPlanMetrics } from '../services/optimization';
 import { Panel, MetricCard } from '../components/ui';
 import { ensureChartTheme } from '../services/chartTheme';
 
+// Draws the numeric value on top of each bar so the manual/AI comparison can be
+// read at a glance without hovering. Chart.js has no built-in datalabels plugin.
+const valueLabels = {
+  id: 'abpsValueLabels',
+  afterDatasetsDraw(chart, _args, opts) {
+    const color = opts && opts.color;
+    if (!color) return;
+    const { ctx } = chart;
+    ctx.save();
+    ctx.font = '600 11px "Inter", system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = color;
+    chart.data.datasets.forEach((ds, di) => {
+      const meta = chart.getDatasetMeta(di);
+      if (meta.hidden) return;
+      meta.data.forEach((bar, i) => {
+        const v = ds.data[i];
+        if (v == null || Number.isNaN(v)) return;
+        ctx.fillText(String(v), bar.x, bar.y - 5);
+      });
+    });
+    ctx.restore();
+  },
+};
+
 export function ChartCanvas({ config, height = 260 }) {
   const ref = useRef(null);
-  const chartRef = useRef(null);
   const { theme } = useApp();
+  // Rebuild only when something the chart actually renders changes (type, data
+  // and series labels), so the canvas keeps a stable size across re-renders.
+  const signature = JSON.stringify([config.type, config.data]);
   useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current) return undefined;
     ensureChartTheme();
-    chartRef.current = new Chart(ref.current.getContext('2d'), config);
-    return () => { if (chartRef.current) chartRef.current.destroy(); };
+    const chart = new Chart(ref.current.getContext('2d'), config);
+    return () => chart.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(config.data), theme]);
+  }, [signature, theme]);
   return <div style={{ height }}><canvas ref={ref} /></div>;
 }
 
@@ -146,26 +174,26 @@ export function AnalyticsPage() {
       labels: ['Blocks', 'Tasks Planned', 'Utilization %', 'Bundled', 'Conflicts'],
       datasets: [
         {
-          label: 'Manual / Current Plan',
+          label: 'Manual Baseline',
           data: diff.manual,
           backgroundColor: '#94a3b8',
           borderColor: 'rgba(100, 116, 139, 0.9)',
           borderWidth: 1,
           borderRadius: 5,
-          categoryPercentage: 0.52,
-          barPercentage: 0.85,
-          maxBarThickness: 18,
+          categoryPercentage: 0.56,
+          barPercentage: 0.82,
+          maxBarThickness: 26,
         },
         {
-          label: 'AI Optimized Plan',
+          label: 'AI Optimized',
           data: diff.ai,
           backgroundColor: '#3b82f6',
           borderColor: 'rgba(37, 99, 235, 0.9)',
           borderWidth: 1,
           borderRadius: 5,
-          categoryPercentage: 0.52,
-          barPercentage: 0.85,
-          maxBarThickness: 18,
+          categoryPercentage: 0.56,
+          barPercentage: 0.82,
+          maxBarThickness: 26,
         },
       ],
     },
@@ -173,6 +201,7 @@ export function AnalyticsPage() {
       responsive: true,
       maintainAspectRatio: false,
       animation: { duration: 420, easing: 'easeOutQuart' },
+      layout: { padding: { top: 18, bottom: 2 } },
       plugins: {
         legend: {
           position: 'bottom',
@@ -193,6 +222,7 @@ export function AnalyticsPage() {
             label: (c) => ` ${c.dataset.label}: ${c.parsed.y}`,
           },
         },
+        abpsValueLabels: { color: 'rgba(100,116,139,0.95)' },
       },
       interaction: { mode: 'index', intersect: false },
       scales: {
@@ -208,6 +238,7 @@ export function AnalyticsPage() {
         },
       },
     },
+    plugins: [valueLabels],
   };
 
   const weeklyConfig = {
@@ -266,9 +297,9 @@ export function AnalyticsPage() {
         </Panel>
       </div>
 
-      <div className="grid gap-4" style={{ gridTemplateColumns: '1.4fr 1fr' }}>
+      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(340px,1fr))' }}>
         <Panel title="Before vs After AI Optimization" icon={<GitCompareArrows width={18} height={18} color="var(--purple)" />}>
-          <ChartCanvas config={comparisonConfig} />
+          <ChartCanvas config={comparisonConfig} height={320} />
         </Panel>
         <Panel title="Weekly Trend" icon={<TrendingUp width={18} height={18} color="var(--green)" />}>
           <ChartCanvas config={weeklyConfig} />

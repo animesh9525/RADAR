@@ -18,9 +18,9 @@ export function StatusBadge({ status }) {
   return <Badge tone={map[status] || 'info'}>{status}</Badge>;
 }
 
-export function Panel({ title, icon, actions, children, bodyClass = '', className = '' }) {
+export function Panel({ title, icon, actions, children, bodyClass = '', className = '', ...rest }) {
   return (
-    <div className={`app-panel ${className}`}>
+    <div className={`app-panel ${className}`} {...rest}>
       {(title || actions) && (
         <div className="panel-header">
           <div className="panel-title">
@@ -135,7 +135,9 @@ export function ToastHost({ toasts, onDismiss }) {
         return (
           <div key={t.id} onClick={() => onDismiss(t.id)}
             style={{
-              background: 'var(--card)', border: `1px solid ${tone}`, borderLeft: `4px solid ${tone}`,
+                background: 'var(--card)', borderStyle: 'solid',
+                borderTopWidth: 1, borderRightWidth: 1, borderBottomWidth: 1, borderLeftWidth: 4,
+                borderTopColor: tone, borderRightColor: tone, borderBottomColor: tone, borderLeftColor: tone,
               borderRadius: 10, padding: '10px 14px', fontWeight: 600, fontSize: 13,
               boxShadow: 'var(--shadow-lg)', cursor: 'pointer', maxWidth: 320, color: 'var(--text)',
               display: 'flex', gap: 8, alignItems: 'center',

@@ -41,7 +41,7 @@ export function AssistantPage() {
               padding: '10px 12px', borderRadius: 10, fontSize: 13.5, lineHeight: 1.6,
             }}>
               <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 4, opacity: .75, fontSize: 11, fontWeight: 700 }}>
-                {m.role === 'user' ? <User width={12} height={12} /> : <Bot width={12} height={12} />}{m.role === 'user' ? 'YOU' : 'AI-ABPS'}
+                {m.role === 'user' ? <User width={12} height={12} /> : <Bot width={12} height={12} />}{m.role === 'user' ? 'YOU' : 'RADAR'}
               </div>
               {m.text}
             </div>
